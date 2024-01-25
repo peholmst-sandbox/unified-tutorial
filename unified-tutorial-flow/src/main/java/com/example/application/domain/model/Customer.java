@@ -1,9 +1,15 @@
 package com.example.application.domain.model;
 
 import com.example.application.domain.base.BaseEntity;
+import com.example.application.domain.model.jpa.CountryAttributeConverter;
+import com.example.application.domain.model.jpa.WebsiteAttributeConverter;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Length;
 
 import java.util.Set;
 
@@ -15,10 +21,16 @@ public class Customer extends BaseEntity {
     public static final String PROP_COUNTRY = "country";
     public static final String PROP_INDUSTRIES = "industries";
 
+    @NotEmpty
+    @Length(max = 255)
     private String name;
-    private String website;
-    private String country;
+    @Convert(converter = WebsiteAttributeConverter.class)
+    private Website website; // TODO Validate max length on this as well (inside the Website class)
+    @Convert(converter = CountryAttributeConverter.class)
+    @NotNull
+    private Country country;
     @ManyToMany(fetch = FetchType.EAGER)
+    @NotEmpty
     private Set<Industry> industries;
 
     public String getName() {
@@ -29,19 +41,19 @@ public class Customer extends BaseEntity {
         this.name = name;
     }
 
-    public String getWebsite() {
+    public Website getWebsite() {
         return website;
     }
 
-    public void setWebsite(String website) {
+    public void setWebsite(Website website) {
         this.website = website;
     }
 
-    public String getCountry() {
+    public Country getCountry() {
         return country;
     }
 
-    public void setCountry(String country) {
+    public void setCountry(Country country) {
         this.country = country;
     }
 

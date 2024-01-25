@@ -1,43 +1,43 @@
 INSERT INTO customer (id, version, name, website, country)
-VALUES (1, 1, 'AlphaTech', 'www.alphatech.com', 'US');
+VALUES (1, 1, 'AlphaTech', 'https://www.alphatech.com', 'US');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (2, 1, 'BetaSolutions', 'www.betasolutions.com', 'GB');
+VALUES (2, 1, 'BetaSolutions', 'https://www.betasolutions.com', 'GB');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (3, 1, 'GammaIndustries', 'www.gammaindustries.com', 'CA');
+VALUES (3, 1, 'GammaIndustries', 'https://www.gammaindustries.com', 'CA');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (4, 1, 'DeltaCorp', 'www.deltacorp.com', 'AU');
+VALUES (4, 1, 'DeltaCorp', 'https://www.deltacorp.com', 'AU');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (5, 1, 'EpsilonEnterprises', 'www.epsilonenterprises.com', 'NZ');
+VALUES (5, 1, 'EpsilonEnterprises', 'https://www.epsilonenterprises.com', 'NZ');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (6, 1, 'ZetaGlobal', 'www.zetaglobal.com', 'IN');
+VALUES (6, 1, 'ZetaGlobal', 'https://www.zetaglobal.com', 'IN');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (7, 1, 'EtaSystems', 'www.etasystems.com', 'ZA');
+VALUES (7, 1, 'EtaSystems', 'https://www.etasystems.com', 'ZA');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (8, 1, 'ThetaTech', 'www.thetatech.com', 'JP');
+VALUES (8, 1, 'ThetaTech', 'https://www.thetatech.com', 'JP');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (9, 1, 'IotaConsulting', 'www.iotaconsulting.com', 'FR');
+VALUES (9, 1, 'IotaConsulting', 'https://www.iotaconsulting.com', 'FR');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (10, 1, 'KappaDesigns', 'www.kappadesigns.com', 'DE');
+VALUES (10, 1, 'KappaDesigns', 'https://www.kappadesigns.com', 'DE');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (11, 1, 'LambdaLogistics', 'www.lambdalogistics.com', 'ES');
+VALUES (11, 1, 'LambdaLogistics', 'https://www.lambdalogistics.com', 'ES');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (12, 1, 'MuManufacturing', 'www.mumanufacturing.com', 'BR');
+VALUES (12, 1, 'MuManufacturing', 'https://www.mumanufacturing.com', 'BR');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (13, 1, 'NuNetworks', 'www.nunetworks.com', 'CN');
+VALUES (13, 1, 'NuNetworks', 'https://www.nunetworks.com', 'CN');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (14, 1, 'XiExports', 'www.xiexports.com', 'RU');
+VALUES (14, 1, 'XiExports', 'https://www.xiexports.com', 'RU');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (15, 1, 'OmicronOutfits', 'www.omicronoutfits.com', 'NL');
+VALUES (15, 1, 'OmicronOutfits', 'https://www.omicronoutfits.com', 'NL');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (16, 1, 'PiProductions', 'www.piproductions.com', 'KE');
+VALUES (16, 1, 'PiProductions', 'https://www.piproductions.com', 'KE');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (17, 1, 'RhoRetail', 'www.rhoretail.com', 'SE');
+VALUES (17, 1, 'RhoRetail', 'https://www.rhoretail.com', 'SE');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (18, 1, 'SigmaServices', 'www.sigmaservices.com', 'NO');
+VALUES (18, 1, 'SigmaServices', 'https://www.sigmaservices.com', 'NO');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (19, 1, 'TauTechnologies', 'www.tautecnhologies.com', 'MX');
+VALUES (19, 1, 'TauTechnologies', 'https://www.tautecnhologies.com', 'MX');
 INSERT INTO customer (id, version, name, website, country)
-VALUES (20, 1, 'UpsilonUtilities', 'www.upsilonutilities.com', 'AE');
+VALUES (20, 1, 'UpsilonUtilities', 'https://www.upsilonutilities.com', 'AE');
 
 INSERT INTO industry (id, version, name)
 VALUES (101, 1, 'Technology and Software');
