@@ -32,12 +32,14 @@ class CustomerEditor extends Composite<FormLayout> {
     private final MultiSelectComboBox<Industry> industries = new MultiSelectComboBox<>("Industries");
     private final BeanValidationBinder<Customer> binder;
     private Customer customer;
+    private boolean dirty = false;
 
     CustomerEditor(CustomerService customerService, IndustryService industryService) {
         this.customerService = customerService;
         this.industryService = industryService;
 
         binder = new BeanValidationBinder<>(Customer.class);
+        binder.addValueChangeListener(event -> dirty = true);
         binder.bind(name, Customer.PROP_NAME);
         binder.forField(website)
                 .withNullRepresentation("")
@@ -76,6 +78,7 @@ class CustomerEditor extends Composite<FormLayout> {
         if (customer != null && customer.getWebsite() != null) {
             websiteLink.setHref(customer.getWebsite().toString());
         }
+        this.dirty = false;
     }
 
     private boolean isWebsiteLinkVisible() {
@@ -86,12 +89,13 @@ class CustomerEditor extends Composite<FormLayout> {
         return Optional.ofNullable(customer);
     }
 
-    public void clearForm() {
-        populateForm(null);
+    public boolean isDirty() {
+        return dirty;
     }
 
-    public void discardChanges() {
+    public void discard() {
         binder.readBean(customer);
+        dirty = false;
     }
 
     public void setReadOnly(boolean readOnly) {
