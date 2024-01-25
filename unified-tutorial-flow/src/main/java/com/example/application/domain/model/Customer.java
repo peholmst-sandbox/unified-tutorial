@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -19,6 +20,7 @@ public class Customer extends BaseEntity {
     public static final String PROP_NAME = "name";
     public static final String PROP_WEBSITE = "website";
     public static final String PROP_COUNTRY = "country";
+    public static final String PROP_FIRST_CONTACT = "firstContact";
     public static final String PROP_INDUSTRIES = "industries";
 
     @NotEmpty
@@ -29,6 +31,7 @@ public class Customer extends BaseEntity {
     @Convert(converter = CountryAttributeConverter.class)
     @NotNull
     private Country country;
+    private LocalDate firstContact;
     @ManyToMany(fetch = FetchType.EAGER)
     @NotEmpty
     private Set<Industry> industries;
@@ -55,6 +58,14 @@ public class Customer extends BaseEntity {
 
     public void setCountry(Country country) {
         this.country = country;
+    }
+
+    public LocalDate getFirstContact() {
+        return firstContact;
+    }
+
+    public void setFirstContact(LocalDate firstContact) {
+        this.firstContact = firstContact;
     }
 
     public Set<Industry> getIndustries() {
