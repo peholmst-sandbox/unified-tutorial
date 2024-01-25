@@ -23,17 +23,17 @@ public class Customer extends BaseEntity {
     public static final String PROP_FIRST_CONTACT = "firstContact";
     public static final String PROP_INDUSTRIES = "industries";
 
-    @NotEmpty
+    @NotEmpty(message = "Please enter a name")
     @Length(max = 255)
     private String name;
     @Convert(converter = WebsiteAttributeConverter.class)
-    private Website website; // TODO Validate max length on this as well (inside the Website class)
+    private Website website;
     @Convert(converter = CountryAttributeConverter.class)
-    @NotNull
+    @NotNull(message = "Please select a country")
     private Country country;
     private LocalDate firstContact;
     @ManyToMany(fetch = FetchType.EAGER)
-    @NotEmpty
+    @NotEmpty(message = "Please select at least one industry")
     private Set<Industry> industries;
 
     public String getName() {

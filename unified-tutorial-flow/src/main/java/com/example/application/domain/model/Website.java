@@ -14,6 +14,9 @@ public final class Website {
             if (!url.getProtocol().equals("http") && !url.getProtocol().equals("https")) {
                 throw new IllegalArgumentException("Invalid website URL");
             }
+            if (website.length() > 255) { // Standard column length in JPA
+                throw new IllegalArgumentException("Website URL is too long");
+            }
             this.website = url.toString();
         } catch (MalformedURLException ex) {
             throw new IllegalArgumentException("Invalid website URL");
