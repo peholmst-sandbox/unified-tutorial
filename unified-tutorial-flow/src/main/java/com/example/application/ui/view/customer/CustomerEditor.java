@@ -12,31 +12,39 @@ import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.Nullable;
 
 import java.util.Optional;
 
 class CustomerEditor extends Composite<FormLayout> {
-    private final IndustryService industryService;
     private final CustomerService customerService;
     private final TextField name = new TextField("Name");
     private final TextField website = new TextField("Website");
-    private final Anchor websiteLink = new Anchor();
+    private final Anchor visitWebsite = new Anchor();
     private final ComboBox<Country> country = new ComboBox<>("Country");
     private final DatePicker firstContact = new DatePicker("First Contact");
     private final MultiSelectComboBox<Industry> industries = new MultiSelectComboBox<>("Industries");
     private final BeanValidationBinder<Customer> binder;
     private Customer customer;
     private boolean dirty = false;
+    private boolean readOnly = false;
 
     CustomerEditor(CustomerService customerService, IndustryService industryService) {
         this.customerService = customerService;
-        this.industryService = industryService;
+
+        visitWebsite.setTarget("_blank");
+        visitWebsite.setText("Visit website");
+        updateVisitWebsiteVisibility();
+
+        country.setItems(Country.allCountries());
+        country.setItemLabelGenerator(Country::getDisplayName);
+
+        industries.setAutoExpand(MultiSelectComboBox.AutoExpandMode.VERTICAL);
+        industries.setItemLabelGenerator(Industry::getName);
+        industries.setItems(industryService.list());
 
         binder = new BeanValidationBinder<>(Customer.class);
         binder.addValueChangeListener(event -> dirty = true);
@@ -53,36 +61,20 @@ class CustomerEditor extends Composite<FormLayout> {
     @Override
     protected FormLayout initContent() {
         var formLayout = new FormLayout();
-        var websiteLinkIcon = VaadinIcon.EXTERNAL_LINK.create();
-        websiteLinkIcon.addClassName(LumoUtility.IconSize.SMALL);
-        websiteLink.add(websiteLinkIcon);
-        websiteLink.setAriaLabel("Visit website");
-        websiteLink.setTarget("_blank");
-        website.setSuffixComponent(websiteLink);
-
-        country.setItems(Country.allCountries());
-        country.setItemLabelGenerator(Country::getDisplayName);
-
-        industries.setAutoExpand(MultiSelectComboBox.AutoExpandMode.VERTICAL);
-        industries.setItemLabelGenerator(Industry::getName);
-        industries.setItems(industryService.list());
-
-        formLayout.add(name, website, country, firstContact, industries);
+        formLayout.add(name, website, visitWebsite, country, firstContact, industries);
         return formLayout;
     }
 
     public void populateForm(@Nullable Customer customer) {
         this.customer = customer;
         binder.readBean(customer);
-        websiteLink.setVisible(isWebsiteLinkVisible());
         if (customer != null && customer.getWebsite() != null) {
-            websiteLink.setHref(customer.getWebsite().toString());
+            visitWebsite.setHref(customer.getWebsite().toString());
+        } else {
+            visitWebsite.setHref("");
         }
+        updateVisitWebsiteVisibility();
         this.dirty = false;
-    }
-
-    private boolean isWebsiteLinkVisible() {
-        return customer != null && customer.getWebsite() != null && website.isReadOnly();
     }
 
     public Optional<Customer> getCustomer() {
@@ -94,21 +86,23 @@ class CustomerEditor extends Composite<FormLayout> {
     }
 
     public void discard() {
-        binder.readBean(customer);
-        dirty = false;
+        populateForm(customer);
     }
 
     public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
         binder.setReadOnly(readOnly);
-        websiteLink.setVisible(isWebsiteLinkVisible());
+        name.setVisible(!readOnly);
+        website.setVisible(!readOnly);
+        updateVisitWebsiteVisibility();
+    }
+
+    private void updateVisitWebsiteVisibility() {
+        visitWebsite.setVisible(readOnly && !visitWebsite.getHref().isEmpty());
     }
 
     public void focus() {
         name.focus();
-    }
-
-    public void setNameVisible(boolean visible) {
-        name.setVisible(visible);
     }
 
     public Customer save() throws ValidationException {

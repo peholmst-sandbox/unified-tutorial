@@ -240,7 +240,6 @@ class CustomerView extends HorizontalLayout implements BeforeEnterObserver, Befo
             } else {
                 title.setText(getCustomerName());
             }
-            editor.setNameVisible(editMode);
             editor.setReadOnly(!editMode);
             edit.setVisible(!editMode);
             delete.setVisible(!editMode);
