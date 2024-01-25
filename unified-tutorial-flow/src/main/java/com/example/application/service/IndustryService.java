@@ -14,7 +14,7 @@ public class IndustryService {
 
     private final IndustryRepository industryRepository;
 
-    public IndustryService(IndustryRepository industryRepository) {
+    IndustryService(IndustryRepository industryRepository) {
         this.industryRepository = industryRepository;
     }
 

@@ -12,7 +12,7 @@ public class CountryService {
     private final Map<String, Locale> countries;
     private final List<String> sortedListOfCountryCodes;
 
-    public CountryService() {
+    CountryService() {
         countries = Stream.of(Locale.getISOCountries())
                 .map(countryCode -> new Locale("", countryCode))
                 .collect(Collectors.toMap(Locale::getISO3Country, l -> l));
