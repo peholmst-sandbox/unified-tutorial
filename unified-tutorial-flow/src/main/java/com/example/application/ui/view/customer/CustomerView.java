@@ -7,6 +7,7 @@ import com.example.application.service.IndustryService;
 import com.example.application.ui.HasNavbarContent;
 import com.example.application.ui.MainLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasAriaLabel;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -171,7 +172,7 @@ class CustomerView extends Main implements BeforeEnterObserver, BeforeLeaveObser
         }
     }
 
-    class Sidebar extends Section {
+    class Sidebar extends Section implements HasAriaLabel {
         private final CustomerEditor editor;
         private final Button edit;
         private final Button save;
