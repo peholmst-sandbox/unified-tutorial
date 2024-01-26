@@ -9,7 +9,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.function.SerializableConsumer;
 
-class AddCustomerDialog extends Dialog {
+final class AddCustomerDialog extends Dialog {
 
     private final CustomerEditor editor;
     private final SerializableConsumer<Customer> onSaveCallback;
