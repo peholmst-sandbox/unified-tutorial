@@ -21,12 +21,9 @@ import java.util.Optional;
 
 class CustomerEditor extends Composite<FormLayout> {
     private final CustomerService customerService;
-    private final TextField name = new TextField("Name");
-    private final TextField website = new TextField("Website");
-    private final WebsiteLink websiteLink = new WebsiteLink();
-    private final ComboBox<Country> country = new ComboBox<>("Country");
-    private final DatePicker firstContact = new DatePicker("First Contact");
-    private final MultiSelectComboBox<Industry> industries = new MultiSelectComboBox<>("Industries");
+    private final TextField name;
+    private final TextField website;
+    private final WebsiteLink websiteLink;
     private final BeanValidationBinder<Customer> binder;
     private Customer customer;
     private boolean dirty = false;
@@ -35,14 +32,21 @@ class CustomerEditor extends Composite<FormLayout> {
     CustomerEditor(CustomerService customerService, IndustryService industryService) {
         this.customerService = customerService;
 
-        updateVisitWebsiteVisibility();
+        name = new TextField("Name");
+        website = new TextField("Website");
+        websiteLink = new WebsiteLink();
 
+        var country = new ComboBox<Country>("Country");
         country.setItems(Country.allCountries());
         country.setItemLabelGenerator(Country::getDisplayName);
 
+        var firstContact = new DatePicker("First Contact");
+
+        var industries = new MultiSelectComboBox<>("Industries", industryService.list());
         industries.setAutoExpand(MultiSelectComboBox.AutoExpandMode.VERTICAL);
         industries.setItemLabelGenerator(Industry::getName);
-        industries.setItems(industryService.list());
+
+        getContent().add(name, website, websiteLink, country, firstContact, industries);
 
         binder = new BeanValidationBinder<>(Customer.class);
         binder.addValueChangeListener(event -> dirty = true);
@@ -54,16 +58,11 @@ class CustomerEditor extends Composite<FormLayout> {
         binder.bind(country, Customer.PROP_COUNTRY);
         binder.bind(firstContact, Customer.PROP_FIRST_CONTACT);
         binder.bind(industries, Customer.PROP_INDUSTRIES);
+
+        updateVisitWebsiteVisibility();
     }
 
-    @Override
-    protected FormLayout initContent() {
-        var formLayout = new FormLayout();
-        formLayout.add(name, website, websiteLink, country, firstContact, industries);
-        return formLayout;
-    }
-
-    public void populateForm(@Nullable Customer customer) {
+    public void setCustomer(@Nullable Customer customer) {
         this.customer = customer;
         binder.readBean(customer);
         websiteLink.setWebsite(customer == null ? null : customer.getWebsite());
@@ -80,7 +79,7 @@ class CustomerEditor extends Composite<FormLayout> {
     }
 
     public void discard() {
-        populateForm(customer);
+        setCustomer(customer);
     }
 
     public void setReadOnly(boolean readOnly) {
@@ -92,7 +91,7 @@ class CustomerEditor extends Composite<FormLayout> {
     }
 
     private void updateVisitWebsiteVisibility() {
-        websiteLink.setVisible(readOnly && websiteLink.getWebsite() != null);
+        websiteLink.setVisible(readOnly && websiteLink.getWebsite().isPresent());
     }
 
     public void focus() {
@@ -104,7 +103,7 @@ class CustomerEditor extends Composite<FormLayout> {
             customer = new Customer();
         }
         binder.writeBean(customer);
-        populateForm(customerService.save(customer));
+        setCustomer(customerService.save(customer));
         return customer;
     }
 }

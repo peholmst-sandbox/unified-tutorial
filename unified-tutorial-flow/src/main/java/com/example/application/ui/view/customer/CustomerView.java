@@ -19,7 +19,6 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoIcon;
@@ -27,7 +26,6 @@ import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import jakarta.annotation.Nullable;
 import org.springframework.data.domain.PageRequest;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -77,8 +75,6 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
     private final Sidebar sidebar;
     private final Button add;
 
-    // TODO Fluent keyboard navigation support is missing
-
     CustomerView(CustomerService customerService,
                  IndustryService industryService) {
         this.customerService = customerService;
@@ -113,7 +109,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
     private void configureGrid() {
         grid.setHeightFull();
         grid.addColumn(Customer.PROP_NAME).setAutoWidth(true);
-        grid.addColumn(Customer.PROP_COUNTRY).setAutoWidth(true).setSortable(true); // TODO Can we show a flag?
+        grid.addColumn(Customer.PROP_COUNTRY).setAutoWidth(true).setSortable(true);
         grid.addColumn(Customer.PROP_FIRST_CONTACT).setAutoWidth(true);
         grid.addColumn(new ComponentRenderer<>(HorizontalLayout::new, (layout, customer) -> {
                     customer.getIndustries().stream().map(this::createIndustryBadge).forEach(layout::add);
@@ -141,7 +137,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
                         query.getPage(),
                         query.getPageSize(),
                         VaadinSpringDataHelpers.toSpringDataSort(query))).stream());
-        grid.setSelectionMode(Grid.SelectionMode.NONE); // TODO Is this the right way to go?
+        grid.setSelectionMode(Grid.SelectionMode.NONE);
 
         var contextMenu = new GridContextMenu<>(grid);
 
@@ -262,7 +258,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         }
 
         public void setCustomer(@Nullable Customer customer) {
-            editor.populateForm(customer);
+            editor.setCustomer(customer);
         }
 
         public void setEditMode(boolean editMode) {
@@ -312,7 +308,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
                 grid.getDataProvider().refreshAll();
                 showAllCustomers();
             }));
-            confirmDialog.setConfirmButtonTheme("error primary"); // TODO Is there a utility class for this so that I don't have to use a magic string?
+            confirmDialog.setConfirmButtonTheme("error primary");
             confirmDialog.setCancelable(true);
             confirmDialog.open();
         }

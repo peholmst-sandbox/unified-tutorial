@@ -8,6 +8,8 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.Nullable;
 
+import java.util.Optional;
+
 public final class WebsiteLink extends Composite<Anchor> {
 
     private final Span websiteSpan;
@@ -44,7 +46,7 @@ public final class WebsiteLink extends Composite<Anchor> {
         return href.replaceAll("(?:https://|http://)(?:www\\.)?", "");
     }
 
-    public @Nullable Website getWebsite() {
-        return website;
+    public Optional<Website> getWebsite() {
+        return Optional.ofNullable(website);
     }
 }
