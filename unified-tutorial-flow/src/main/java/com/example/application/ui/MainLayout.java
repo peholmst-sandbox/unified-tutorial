@@ -7,13 +7,13 @@ import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 import java.util.Optional;
 
 public class MainLayout extends AppLayout {
 
-    private H2 viewTitle;
+    private H1 viewTitle;
     private Div viewNavbarContent;
 
     public MainLayout() {
@@ -24,25 +24,30 @@ public class MainLayout extends AppLayout {
 
     private void addHeaderContent() {
         var toggle = new DrawerToggle();
+        toggle.addClassNames(TextColor.SECONDARY);
         toggle.setAriaLabel("Menu toggle");
+        toggle.setTooltipText("Menu toggle");
 
-        viewTitle = new H2();
-        viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
+        viewTitle = new H1();
+        viewTitle.addClassNames(FontSize.LARGE);
 
         viewNavbarContent = new Div();
-        viewNavbarContent.addClassNames(LumoUtility.Margin.Left.LARGE);
+        viewNavbarContent.addClassNames(Margin.Start.AUTO);
 
-        addToNavbar(true, toggle, viewTitle, viewNavbarContent);
+        var header = new Header(toggle, viewTitle, viewNavbarContent);
+        header.addClassNames(AlignItems.CENTER, Display.FLEX, Padding.End.MEDIUM, Width.FULL);
+
+        addToNavbar(true, header);
     }
 
     private void addDrawerContent() {
-        var appName = new H1("My App");
-        appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
-        var header = new Header(appName);
+        var appName = new Span("My App");
+        appName.addClassNames(AlignItems.CENTER, Display.FLEX, FontSize.LARGE, FontWeight.SEMIBOLD, Height.XLARGE,
+                Padding.Horizontal.MEDIUM);
 
         var scroller = new Scroller(createNavigation());
 
-        addToDrawer(header, scroller, createFooter());
+        addToDrawer(appName, scroller, createFooter());
     }
 
     private SideNav createNavigation() {

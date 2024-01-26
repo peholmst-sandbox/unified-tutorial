@@ -7,17 +7,18 @@ import com.example.application.service.IndustryService;
 import com.example.application.ui.HasNavbarContent;
 import com.example.application.ui.MainLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.binder.ValidationException;
@@ -25,7 +26,7 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoIcon;
-import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import jakarta.annotation.Nullable;
 import org.springframework.data.domain.PageRequest;
 
@@ -33,7 +34,7 @@ import java.util.Optional;
 
 @PageTitle("Customers")
 @Route(value = "customer/:customerId?/:action?(edit)", layout = MainLayout.class)
-class CustomerView extends HorizontalLayout implements BeforeEnterObserver, BeforeLeaveObserver, HasNavbarContent {
+class CustomerView extends Main implements BeforeEnterObserver, BeforeLeaveObserver, HasNavbarContent {
 
     private static final String CUSTOMER_ID_ROUTE_PARAM = "customerId";
     private static final String ACTION_ROUTE_PARAM = "action";
@@ -56,10 +57,10 @@ class CustomerView extends HorizontalLayout implements BeforeEnterObserver, Befo
 
         grid = new Grid<>(Customer.class, false);
         sidebar = new Sidebar();
-        add = new Button("Add customer", event -> add());
+        add = new Button("Add customer", LumoIcon.PLUS.create(), event -> add());
+        add.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        setHeightFull();
-        setSpacing(false);
+        addClassNames(Display.FLEX, Height.FULL);
 
         add(grid);
         add(sidebar);
@@ -92,9 +93,15 @@ class CustomerView extends HorizontalLayout implements BeforeEnterObserver, Befo
                 .setFlexGrow(1)
                 .setHeader("Industries");
         grid.addColumn(new ComponentRenderer<>(Anchor::new, (link, customer) -> {
-                    link.add(LumoIcon.EDIT.create()); // TODO Actually, this is not editing but showing the details. Another icon?
+                    Icon icon = VaadinIcon.INFO_CIRCLE.create();
+                    icon.addClassName(IconSize.SMALL);
+
+                    link.add(icon); // TODO Actually, this is not editing but showing the details. Another icon?
+                    link.addClassNames(AlignItems.CENTER, BoxSizing.BORDER, Display.FLEX, Height.MEDIUM,
+                            JustifyContent.CENTER, Width.MEDIUM);
                     link.setHref(SHOW_CUSTOMER_ROUTE_TEMPLATE.formatted(customer.getId()));
-                    link.getElement().setAttribute("aria-label", "Show details of " + customer.getName());
+                    link.setAriaLabel("Show details of " + customer.getName());
+                    link.setTitle("Show details of " + customer.getName());
                 }))
                 .setAutoWidth(true)
                 .setFrozenToEnd(true)
@@ -110,7 +117,7 @@ class CustomerView extends HorizontalLayout implements BeforeEnterObserver, Befo
         var contextMenu = new GridContextMenu<>(grid);
 
         var titleItem = new H2();
-        titleItem.addClassNames(LumoUtility.FontSize.MEDIUM, LumoUtility.Padding.LARGE);
+        titleItem.addClassNames(FontSize.MEDIUM, Padding.LARGE);
         contextMenu.add(titleItem);
 
         contextMenu.addItem("Show Details", e -> e.getItem().ifPresent(CustomerNavigation::showCustomerDetails));
@@ -166,7 +173,7 @@ class CustomerView extends HorizontalLayout implements BeforeEnterObserver, Befo
         }
     }
 
-    class Sidebar extends FlexLayout {
+    class Sidebar extends Section {
         private final CustomerEditor editor;
         private final Button edit;
         private final Button save;
@@ -177,22 +184,20 @@ class CustomerView extends HorizontalLayout implements BeforeEnterObserver, Befo
 
         Sidebar() {
             editor = new CustomerEditor(customerService, industryService);
-            edit = new Button("Edit", event -> edit());
+            edit = new Button("Edit", LumoIcon.EDIT.create(), event -> edit());
             save = new Button("Save", event -> save());
             discard = new Button("Discard", event -> discard());
-            delete = new Button("Delete", event -> delete());
+            delete = new Button("Delete", VaadinIcon.TRASH.create(), event -> delete());
             close = new Button(VaadinIcon.CLOSE.create(), event -> close());
             title = new H2();
 
-            setFlexDirection(FlexDirection.COLUMN);
-            setWidth("400px");
-            addClassName(LumoUtility.Border.LEFT);
+            addClassNames(Border.LEFT, Display.FLEX, FlexDirection.COLUMN);
+            setWidth(25, Unit.REM);
 
             var sidebarContentLayout = new FlexLayout();
-            sidebarContentLayout.setFlexDirection(FlexDirection.COLUMN);
-            sidebarContentLayout.addClassName(LumoUtility.Padding.LARGE);
+            sidebarContentLayout.setFlexDirection(FlexLayout.FlexDirection.COLUMN);
+            sidebarContentLayout.addClassNames(Flex.GROW, Padding.LARGE);
             add(sidebarContentLayout);
-            setFlexGrow(1, sidebarContentLayout);
 
             sidebarContentLayout.add(createHeaderLayout());
             sidebarContentLayout.add(editor);
@@ -203,11 +208,12 @@ class CustomerView extends HorizontalLayout implements BeforeEnterObserver, Befo
 
         private FlexLayout createHeaderLayout() {
             var layout = new FlexLayout();
-            layout.setFlexDirection(FlexDirection.ROW);
-            layout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+            layout.setFlexDirection(FlexLayout.FlexDirection.ROW);
+            layout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
 
-            close.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-            close.getElement().setAttribute("aria-label", "Close side bar");
+            close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+            close.setAriaLabel("Close sidebar");
+            close.setTooltipText("Close sidebar");
 
             layout.add(title, close);
             return layout;
@@ -215,14 +221,15 @@ class CustomerView extends HorizontalLayout implements BeforeEnterObserver, Befo
 
         private FlexLayout createButtonLayout() {
             var layout = new FlexLayout();
-            layout.setFlexDirection(FlexDirection.ROW);
-            layout.setFlexWrap(FlexWrap.WRAP);
-            layout.addClassName(LumoUtility.Background.CONTRAST_5);
-            layout.addClassName(LumoUtility.Padding.Vertical.SMALL);
-            layout.addClassName(LumoUtility.Padding.Horizontal.MEDIUM);
-            layout.addClassName(LumoUtility.Gap.MEDIUM);
+            layout.setFlexDirection(FlexLayout.FlexDirection.ROW);
+            layout.setFlexWrap(FlexLayout.FlexWrap.WRAP);
+            layout.addClassName(Background.CONTRAST_5);
+            layout.addClassName(Padding.Vertical.SMALL);
+            layout.addClassName(Padding.Horizontal.MEDIUM);
+            layout.addClassName(Gap.MEDIUM);
 
-            delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
+            edit.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+            delete.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY);
 
             save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             save.setDisableOnClick(true);
