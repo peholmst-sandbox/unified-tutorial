@@ -16,50 +16,40 @@ import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility.*;
 
-import java.util.Optional;
+import java.util.Collection;
+import java.util.Collections;
 
-public class MainLayout extends AppLayout {
+public final class MainLayout extends AppLayout {
 
-    // TODO Is it a good practice to create the fields like this, and configure them in a private method,
-    //  or should they be configured in the constructor?
-    private final H1 viewTitle = new H1();
-    private final Div viewNavbarContent = new Div();
+    private final H1 viewTitle;
+    private final Div viewNavbarContent;
 
-    public MainLayout() {
-        setPrimarySection(Section.DRAWER);
-        addDrawerContent();
-        addHeaderContent();
-    }
+    MainLayout() {
+        viewTitle = new H1();
+        viewTitle.addClassNames(FontSize.LARGE);
 
-    private void addHeaderContent() {
+        viewNavbarContent = new Div();
+        viewNavbarContent.addClassNames(Margin.Start.AUTO);
+
         var toggle = new DrawerToggle();
         toggle.addClassNames(TextColor.SECONDARY);
         toggle.setAriaLabel("Menu toggle");
         toggle.setTooltipText("Menu toggle");
 
-        viewTitle.addClassNames(FontSize.LARGE);
-
-        viewNavbarContent.addClassNames(Margin.Start.AUTO);
-
         var header = new Header(toggle, viewTitle, viewNavbarContent);
         header.addClassNames(AlignItems.CENTER, Display.FLEX, Padding.End.MEDIUM, Width.FULL);
-
         addToNavbar(true, header);
-    }
 
-    private void addDrawerContent() {
         var appName = new Span("Pro CRM Deluxe");
         appName.addClassNames(AlignItems.CENTER, Display.FLEX, FontSize.LARGE, FontWeight.SEMIBOLD, Height.XLARGE,
                 Padding.Horizontal.MEDIUM);
 
-        var scroller = new Scroller(createNavigation());
-
-        addToDrawer(appName, scroller);
+        addToDrawer(appName, new Scroller(createSideNav()));
+        setPrimarySection(Section.DRAWER);
     }
 
-    private SideNav createNavigation() {
+    private SideNav createSideNav() {
         var nav = new SideNav();
-        // TODO Here we refer to the StartView directly and to the CustomerView indirectly. Is this inconsistent?
         nav.addItem(new SideNavItem("Start", StartView.class, VaadinIcon.HOME.create()));
         nav.addItem(new SideNavItem("Customers", CustomerView.class, VaadinIcon.BRIEFCASE.create()));
         return nav;
@@ -69,9 +59,8 @@ public class MainLayout extends AppLayout {
     protected void afterNavigation() {
         super.afterNavigation();
         viewTitle.setText(getCurrentPageTitle());
-        // TODO Is it a good idea to allow views to add components to the navbar?
         viewNavbarContent.removeAll();
-        getCurrentNavbarContent().ifPresent(viewNavbarContent::add);
+        viewNavbarContent.add(getCurrentNavbarContent());
     }
 
     private String getCurrentPageTitle() {
@@ -79,11 +68,11 @@ public class MainLayout extends AppLayout {
         return title == null ? "" : title.value();
     }
 
-    private Optional<Component> getCurrentNavbarContent() {
+    private Collection<Component> getCurrentNavbarContent() {
         if (getContent() instanceof HasNavbarContent content) {
             return content.getNavbarContent();
         } else {
-            return Optional.empty();
+            return Collections.emptyList();
         }
     }
 }

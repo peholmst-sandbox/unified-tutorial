@@ -28,8 +28,9 @@ import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import jakarta.annotation.Nullable;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @PageTitle("Customers")
 @Route(value = "customer/:customerId?/:action?(edit)", layout = MainLayout.class)
@@ -105,8 +106,8 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
     }
 
     @Override
-    public Optional<Component> getNavbarContent() {
-        return Optional.of(add);
+    public Collection<Component> getNavbarContent() {
+        return List.of(add);
     }
 
     private void configureGrid() {

@@ -2,11 +2,12 @@ package com.example.application.ui;
 
 import com.vaadin.flow.component.Component;
 
-import java.util.Optional;
+import java.util.Collection;
+import java.util.Collections;
 
 public interface HasNavbarContent {
 
-    default Optional<Component> getNavbarContent() {
-        return Optional.empty();
+    default Collection<Component> getNavbarContent() {
+        return Collections.emptyList();
     }
 }
