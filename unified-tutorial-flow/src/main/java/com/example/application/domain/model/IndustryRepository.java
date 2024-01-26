@@ -1,6 +1,6 @@
 package com.example.application.domain.model;
 
-import com.example.application.domain.base.BaseRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface IndustryRepository extends BaseRepository<Industry> {
+public interface IndustryRepository extends JpaRepository<Industry, Long> {
 }

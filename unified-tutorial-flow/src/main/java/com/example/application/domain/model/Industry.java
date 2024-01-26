@@ -1,6 +1,5 @@
 package com.example.application.domain.model;
 
-import com.example.application.domain.base.BaseEntity;
 import jakarta.persistence.Entity;
 
 @Entity

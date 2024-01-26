@@ -1,6 +1,5 @@
 package com.example.application.domain.model;
 
-import com.example.application.domain.base.BaseEntity;
 import com.example.application.domain.model.jpa.CountryAttributeConverter;
 import com.example.application.domain.model.jpa.WebsiteAttributeConverter;
 import jakarta.persistence.Convert;
