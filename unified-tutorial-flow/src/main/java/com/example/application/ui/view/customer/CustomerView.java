@@ -7,6 +7,7 @@ import com.example.application.service.IndustryService;
 import com.example.application.ui.HasNavbarContent;
 import com.example.application.ui.MainLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -15,7 +16,6 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.html.*;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -28,17 +28,47 @@ import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import jakarta.annotation.Nullable;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.Map;
 import java.util.Optional;
 
 @PageTitle("Customers")
 @Route(value = "customer/:customerId?/:action?(edit)", layout = MainLayout.class)
-class CustomerView extends Main implements BeforeEnterObserver, BeforeLeaveObserver, HasNavbarContent {
+public final class CustomerView extends Main implements BeforeEnterObserver, BeforeLeaveObserver, HasNavbarContent {
 
     private static final String CUSTOMER_ID_ROUTE_PARAM = "customerId";
     private static final String ACTION_ROUTE_PARAM = "action";
     private static final String EDIT_ACTION = "edit";
-    static final String SHOW_CUSTOMER_ROUTE_TEMPLATE = "customer/%s";
-    static final String EDIT_CUSTOMER_ROUTE_TEMPLATE = "customer/%s/edit";
+
+    static RouteParameters createShowCustomerRouteParameters(Customer customer) {
+        return new RouteParameters(CUSTOMER_ID_ROUTE_PARAM, customer.getId().toString());
+    }
+
+    static RouteParameters createEditCustomerRouteParameters(Customer customer) {
+        return new RouteParameters(Map.of(
+                CustomerView.CUSTOMER_ID_ROUTE_PARAM, customer.getId().toString(),
+                CustomerView.ACTION_ROUTE_PARAM, CustomerView.EDIT_ACTION
+        ));
+    }
+
+    public static void editCustomerDetails(Customer customer) {
+        if (customer.getId() == null) {
+            showAllCustomers();
+        } else {
+            UI.getCurrent().navigate(CustomerView.class, createEditCustomerRouteParameters(customer));
+        }
+    }
+
+    public static void showCustomerDetails(Customer customer) {
+        if (customer.getId() == null) {
+            showAllCustomers();
+        } else {
+            UI.getCurrent().navigate(CustomerView.class, createShowCustomerRouteParameters(customer));
+        }
+    }
+
+    public static void showAllCustomers() {
+        UI.getCurrent().navigate(CustomerView.class);
+    }
 
     private final CustomerService customerService;
     private final IndustryService industryService;
@@ -48,8 +78,8 @@ class CustomerView extends Main implements BeforeEnterObserver, BeforeLeaveObser
 
     // TODO Fluent keyboard navigation support is missing
 
-    public CustomerView(CustomerService customerService,
-                        IndustryService industryService) {
+    CustomerView(CustomerService customerService,
+                 IndustryService industryService) {
         this.customerService = customerService;
         this.industryService = industryService;
 
@@ -69,7 +99,7 @@ class CustomerView extends Main implements BeforeEnterObserver, BeforeLeaveObser
     private void add() {
         var dialog = new AddCustomerDialog(customerService, industryService, customer -> {
             grid.getDataProvider().refreshAll();
-            CustomerNavigation.showCustomerDetails(customer);
+            showCustomerDetails(customer);
         });
         dialog.open();
     }
@@ -90,16 +120,16 @@ class CustomerView extends Main implements BeforeEnterObserver, BeforeLeaveObser
                 .setAutoWidth(true)
                 .setFlexGrow(1)
                 .setHeader("Industries");
-        grid.addColumn(new ComponentRenderer<>(Anchor::new, (link, customer) -> {
-                    Icon icon = VaadinIcon.INFO_CIRCLE.create();
+        grid.addColumn(new ComponentRenderer<>(RouterLink::new, (link, customer) -> {
+                    var icon = VaadinIcon.INFO_CIRCLE.create();
                     icon.addClassName(IconSize.SMALL);
 
-                    link.add(icon); // TODO Actually, this is not editing but showing the details. Another icon?
+                    link.add(icon);
                     link.addClassNames(AlignItems.CENTER, BoxSizing.BORDER, Display.FLEX, Height.MEDIUM,
                             JustifyContent.CENTER, Width.MEDIUM);
-                    link.setHref(SHOW_CUSTOMER_ROUTE_TEMPLATE.formatted(customer.getId()));
-                    link.setAriaLabel("Show details of " + customer.getName());
-                    link.setTitle("Show details of " + customer.getName());
+                    link.setRoute(CustomerView.class, createShowCustomerRouteParameters(customer));
+                    link.getElement().setAttribute("aria-label", "Show details of " + customer.getName());
+                    link.getElement().setAttribute("title", "Show details of " + customer.getName());
                 }))
                 .setAutoWidth(true)
                 .setFrozenToEnd(true)
@@ -118,8 +148,8 @@ class CustomerView extends Main implements BeforeEnterObserver, BeforeLeaveObser
         titleItem.addClassNames(FontSize.MEDIUM, Padding.LARGE);
         contextMenu.add(titleItem);
 
-        contextMenu.addItem("Show Details", e -> e.getItem().ifPresent(CustomerNavigation::showCustomerDetails));
-        contextMenu.addItem("Edit Details", e -> e.getItem().ifPresent(CustomerNavigation::editCustomerDetails));
+        contextMenu.addItem("Show Details", e -> e.getItem().ifPresent(CustomerView::showCustomerDetails));
+        contextMenu.addItem("Edit Details", e -> e.getItem().ifPresent(CustomerView::editCustomerDetails));
         contextMenu.setDynamicContentHandler(customer -> {
             if (customer == null) {
                 return false;
@@ -150,7 +180,7 @@ class CustomerView extends Main implements BeforeEnterObserver, BeforeLeaveObser
                     () -> {
                         Notification.show("Customer not found");
                         grid.getDataProvider().refreshAll();
-                        CustomerNavigation.showAllCustomers();
+                        showAllCustomers();
                     });
         } else {
             sidebar.setVisible(false);
@@ -250,14 +280,14 @@ class CustomerView extends Main implements BeforeEnterObserver, BeforeLeaveObser
         }
 
         private void edit() {
-            editor.getCustomer().ifPresent(CustomerNavigation::editCustomerDetails);
+            editor.getCustomer().ifPresent(CustomerView::editCustomerDetails);
         }
 
         private void save() {
             try {
                 var saved = editor.save();
                 grid.getDataProvider().refreshItem(saved);
-                CustomerNavigation.showCustomerDetails(saved);
+                showCustomerDetails(saved);
             } catch (ValidationException ex) {
                 // Keep the dialog open, the validation errors are already visible
             } finally {
@@ -267,7 +297,7 @@ class CustomerView extends Main implements BeforeEnterObserver, BeforeLeaveObser
 
         private void discard() {
             editor.discard(); // To prevent the confirmation dialog from showing up
-            editor.getCustomer().ifPresent(CustomerNavigation::showCustomerDetails);
+            editor.getCustomer().ifPresent(CustomerView::showCustomerDetails);
         }
 
         private void delete() {
@@ -277,7 +307,7 @@ class CustomerView extends Main implements BeforeEnterObserver, BeforeLeaveObser
             confirmDialog.setConfirmButton("Delete", event -> editor.getCustomer().ifPresent(customer -> {
                 customerService.delete(customer);
                 grid.getDataProvider().refreshAll();
-                CustomerNavigation.showAllCustomers();
+                showAllCustomers();
             }));
             confirmDialog.setConfirmButtonTheme("error primary"); // TODO Is there a utility class for this so that I don't have to use a magic string?
             confirmDialog.setCancelable(true);
@@ -285,7 +315,7 @@ class CustomerView extends Main implements BeforeEnterObserver, BeforeLeaveObser
         }
 
         private void close() {
-            CustomerNavigation.showAllCustomers();
+            showAllCustomers();
         }
 
         public String getCustomerName() {

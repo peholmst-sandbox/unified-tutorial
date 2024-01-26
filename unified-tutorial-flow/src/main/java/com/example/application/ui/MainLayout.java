@@ -1,6 +1,6 @@
 package com.example.application.ui;
 
-import com.example.application.ui.view.customer.CustomerNavigation;
+import com.example.application.ui.view.customer.CustomerView;
 import com.example.application.ui.view.start.StartView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -48,7 +48,7 @@ public class MainLayout extends AppLayout {
     }
 
     private void addDrawerContent() {
-        var appName = new Span("My App");
+        var appName = new Span("Pro CRM Deluxe");
         appName.addClassNames(AlignItems.CENTER, Display.FLEX, FontSize.LARGE, FontWeight.SEMIBOLD, Height.XLARGE,
                 Padding.Horizontal.MEDIUM);
 
@@ -61,7 +61,7 @@ public class MainLayout extends AppLayout {
         var nav = new SideNav();
         // TODO Here we refer to the StartView directly and to the CustomerView indirectly. Is this inconsistent?
         nav.addItem(new SideNavItem("Start", StartView.class, VaadinIcon.HOME.create()));
-        nav.addItem(new SideNavItem("Customers", CustomerNavigation.allCustomersView(), VaadinIcon.BRIEFCASE.create()));
+        nav.addItem(new SideNavItem("Customers", CustomerView.class, VaadinIcon.BRIEFCASE.create()));
         return nav;
     }
 

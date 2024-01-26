@@ -5,7 +5,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
 @Route(value = "", layout = MainLayout.class)
-public class StartView extends VerticalLayout {
+public final class StartView extends VerticalLayout {
 
     // TODO What should we put here?
 }
