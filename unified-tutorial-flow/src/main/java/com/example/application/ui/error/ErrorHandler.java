@@ -17,6 +17,7 @@ public class ErrorHandler implements com.vaadin.flow.server.ErrorHandler {
     @Override
     public void error(ErrorEvent event) {
         if (event.getThrowable() instanceof OptimisticLockingFailureException) {
+            log.debug("Optimistic locking failure caught", event.getThrowable());
             showError("Somebody else updated the record while you were making changes.");
         } else {
             log.error("Unexpected error caught", event.getThrowable());
