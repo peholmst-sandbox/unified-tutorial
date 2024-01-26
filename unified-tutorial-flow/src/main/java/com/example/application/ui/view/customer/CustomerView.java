@@ -189,17 +189,18 @@ class CustomerView extends Main implements BeforeEnterObserver, BeforeLeaveObser
             close = new Button(LumoIcon.CROSS.create(), event -> close());
             title = new H2();
 
-            addClassNames(Border.LEFT, Display.FLEX, FlexDirection.COLUMN);
+            addClassNames(BoxShadow.SMALL, Display.FLEX, FlexDirection.COLUMN, Position.RELATIVE);
+            setAriaLabelledBy("sidebar-title");
+            setVisible(false);
             setWidth(25, Unit.REM);
 
             editor.addClassNames(Flex.GROW, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
             add(createHeader(), editor, createFooter());
-
-            setVisible(false);
         }
 
         private Div createHeader() {
             title.addClassNames(FontSize.XLARGE, LineHeight.SMALL);
+            title.setId("sidebar-title");
 
             close.addClassNames(TextColor.SECONDARY);
             close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
