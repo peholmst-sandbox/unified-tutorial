@@ -205,17 +205,34 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         private final Button save;
         private final Button discard;
         private final Button delete;
-        private final Button close;
         private final H2 title;
 
         Sidebar() {
             editor = new CustomerEditor(customerService, industryService);
+            editor.addClassNames(Flex.GROW, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
+
             edit = new Button("Edit", LumoIcon.EDIT.create(), event -> edit());
+            edit.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+
             save = new Button("Save", LumoIcon.CHECKMARK.create(), event -> save());
+            save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            save.setDisableOnClick(true);
+
             discard = new Button("Discard", LumoIcon.UNDO.create(), event -> discard());
+            discard.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+
             delete = new Button("Delete", VaadinIcon.TRASH.create(), event -> delete());
-            close = new Button(LumoIcon.CROSS.create(), event -> close());
+            delete.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY);
+
+            var close = new Button(LumoIcon.CROSS.create(), event -> close());
+            close.addClassNames(TextColor.SECONDARY);
+            close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+            close.setAriaLabel("Close sidebar");
+            close.setTooltipText("Close sidebar");
+
             title = new H2();
+            title.addClassNames(FontSize.XLARGE, LineHeight.SMALL);
+            title.setId("sidebar-title");
 
             addClassNames(BoxShadow.SMALL, Display.FLEX, FlexDirection.COLUMN, Position.RELATIVE);
             setAriaLabelledBy("sidebar-title");
@@ -223,38 +240,15 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
             setVisible(false);
             setWidth(25, Unit.REM);
 
-            editor.addClassNames(Flex.GROW, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
-            add(createHeader(), editor, createFooter());
-        }
-
-        private Div createHeader() {
-            title.addClassNames(FontSize.XLARGE, LineHeight.SMALL);
-            title.setId("sidebar-title");
-
-            close.addClassNames(TextColor.SECONDARY);
-            close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-            close.setAriaLabel("Close sidebar");
-            close.setTooltipText("Close sidebar");
-
             var header = new Div(title, close);
             header.addClassNames(AlignItems.CENTER, Display.FLEX, Height.XLARGE, JustifyContent.BETWEEN,
                     Padding.Horizontal.LARGE);
-            return header;
-        }
-
-        private Div createFooter() {
-            edit.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-            delete.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY);
-
-            save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-            save.setDisableOnClick(true);
-
-            discard.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
             var footer = new Div(edit, delete, save, discard);
             footer.addClassNames(Background.CONTRAST_5, Display.FLEX, Gap.SMALL, Padding.Horizontal.MEDIUM,
                     Padding.Vertical.SMALL);
-            return footer;
+
+            add(header, editor, footer);
         }
 
         public void setCustomer(@Nullable Customer customer) {
