@@ -18,8 +18,6 @@ import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -185,56 +183,48 @@ class CustomerView extends Main implements BeforeEnterObserver, BeforeLeaveObser
         Sidebar() {
             editor = new CustomerEditor(customerService, industryService);
             edit = new Button("Edit", LumoIcon.EDIT.create(), event -> edit());
-            save = new Button("Save", event -> save());
-            discard = new Button("Discard", event -> discard());
+            save = new Button("Save", LumoIcon.CHECKMARK.create(), event -> save());
+            discard = new Button("Discard", LumoIcon.UNDO.create(), event -> discard());
             delete = new Button("Delete", VaadinIcon.TRASH.create(), event -> delete());
-            close = new Button(VaadinIcon.CLOSE.create(), event -> close());
+            close = new Button(LumoIcon.CROSS.create(), event -> close());
             title = new H2();
 
             addClassNames(Border.LEFT, Display.FLEX, FlexDirection.COLUMN);
             setWidth(25, Unit.REM);
 
-            var sidebarContentLayout = new FlexLayout();
-            sidebarContentLayout.setFlexDirection(FlexLayout.FlexDirection.COLUMN);
-            sidebarContentLayout.addClassNames(Flex.GROW, Padding.LARGE);
-            add(sidebarContentLayout);
-
-            sidebarContentLayout.add(createHeaderLayout());
-            sidebarContentLayout.add(editor);
-            add(createButtonLayout());
+            editor.addClassNames(Flex.GROW, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
+            add(createHeader(), editor, createFooter());
 
             setVisible(false);
         }
 
-        private FlexLayout createHeaderLayout() {
-            var layout = new FlexLayout();
-            layout.setFlexDirection(FlexLayout.FlexDirection.ROW);
-            layout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        private Div createHeader() {
+            title.addClassNames(FontSize.XLARGE, LineHeight.SMALL);
 
+            close.addClassNames(TextColor.SECONDARY);
             close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
             close.setAriaLabel("Close sidebar");
             close.setTooltipText("Close sidebar");
 
-            layout.add(title, close);
-            return layout;
+            var header = new Div(title, close);
+            header.addClassNames(AlignItems.CENTER, Display.FLEX, Height.XLARGE, JustifyContent.BETWEEN,
+                    Padding.Horizontal.LARGE);
+            return header;
         }
 
-        private FlexLayout createButtonLayout() {
-            var layout = new FlexLayout();
-            layout.setFlexDirection(FlexLayout.FlexDirection.ROW);
-            layout.setFlexWrap(FlexLayout.FlexWrap.WRAP);
-            layout.addClassName(Background.CONTRAST_5);
-            layout.addClassName(Padding.Vertical.SMALL);
-            layout.addClassName(Padding.Horizontal.MEDIUM);
-            layout.addClassName(Gap.MEDIUM);
-
+        private Div createFooter() {
             edit.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
             delete.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY);
 
             save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             save.setDisableOnClick(true);
-            layout.add(edit, delete, save, discard);
-            return layout;
+
+            discard.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+
+            var footer = new Div(edit, delete, save, discard);
+            footer.addClassNames(Background.CONTRAST_5, Display.FLEX, Gap.SMALL, Padding.Horizontal.MEDIUM,
+                    Padding.Vertical.SMALL);
+            return footer;
         }
 
         public void setCustomer(@Nullable Customer customer) {

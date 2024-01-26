@@ -12,9 +12,13 @@ import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import jakarta.annotation.Nullable;
 
 import java.util.Optional;
@@ -23,7 +27,8 @@ class CustomerEditor extends Composite<FormLayout> {
     private final CustomerService customerService;
     private final TextField name = new TextField("Name");
     private final TextField website = new TextField("Website");
-    private final Anchor visitWebsite = new Anchor();
+    private final Anchor websiteLink = new Anchor();
+    private final Span websiteSpan = new Span();
     private final ComboBox<Country> country = new ComboBox<>("Country");
     private final DatePicker firstContact = new DatePicker("First Contact");
     private final MultiSelectComboBox<Industry> industries = new MultiSelectComboBox<>("Industries");
@@ -35,8 +40,17 @@ class CustomerEditor extends Composite<FormLayout> {
     CustomerEditor(CustomerService customerService, IndustryService industryService) {
         this.customerService = customerService;
 
-        visitWebsite.setTarget("_blank");
-        visitWebsite.setText("Visit website");
+        // Website icon
+        Icon icon = VaadinIcon.GLOBE.create();
+        icon.addClassName(IconSize.SMALL);
+
+        // Accessibility guidelines
+        Span helper = new Span("Opens a new window");
+        helper.addClassNames(Accessibility.SCREEN_READER_ONLY);
+
+        websiteLink.add(icon, websiteSpan, helper);
+        websiteLink.addClassNames(AlignItems.CENTER, Display.FLEX, Gap.SMALL, Margin.Bottom.XSMALL, Margin.Top.MEDIUM);
+        websiteLink.setTarget("_blank");
         updateVisitWebsiteVisibility();
 
         country.setItems(Country.allCountries());
@@ -61,7 +75,7 @@ class CustomerEditor extends Composite<FormLayout> {
     @Override
     protected FormLayout initContent() {
         var formLayout = new FormLayout();
-        formLayout.add(name, website, visitWebsite, country, firstContact, industries);
+        formLayout.add(name, website, websiteLink, country, firstContact, industries);
         return formLayout;
     }
 
@@ -69,9 +83,11 @@ class CustomerEditor extends Composite<FormLayout> {
         this.customer = customer;
         binder.readBean(customer);
         if (customer != null && customer.getWebsite() != null) {
-            visitWebsite.setHref(customer.getWebsite().toString());
+            String href = customer.getWebsite().toString();
+            websiteSpan.setText(href.replace("https://www.", ""));
+            websiteLink.setHref(href);
         } else {
-            visitWebsite.setHref("");
+            websiteLink.setHref("");
         }
         updateVisitWebsiteVisibility();
         this.dirty = false;
@@ -98,7 +114,7 @@ class CustomerEditor extends Composite<FormLayout> {
     }
 
     private void updateVisitWebsiteVisibility() {
-        visitWebsite.setVisible(readOnly && !visitWebsite.getHref().isEmpty());
+        websiteLink.setVisible(readOnly && !websiteLink.getHref().isEmpty());
     }
 
     public void focus() {
