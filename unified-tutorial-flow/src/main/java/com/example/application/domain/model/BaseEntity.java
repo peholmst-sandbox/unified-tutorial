@@ -1,4 +1,4 @@
-package com.example.application.domain.base;
+package com.example.application.domain.model;
 
 import jakarta.persistence.*;
 
