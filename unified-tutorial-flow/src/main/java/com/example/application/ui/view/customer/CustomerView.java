@@ -6,10 +6,7 @@ import com.example.application.service.CustomerService;
 import com.example.application.service.IndustryService;
 import com.example.application.ui.HasNavbarContent;
 import com.example.application.ui.MainLayout;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasAriaLabel;
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.Unit;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -22,6 +19,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoIcon;
@@ -29,6 +27,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import jakarta.annotation.Nullable;
 import org.springframework.data.domain.PageRequest;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -178,6 +177,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
                         sidebar.setCustomer(customer);
                         sidebar.setEditMode(action.equals(EDIT_ACTION));
                         sidebar.setVisible(true);
+                        sidebar.focus();
                     },
                     () -> {
                         Notification.show("Customer not found");
@@ -203,7 +203,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         }
     }
 
-    class Sidebar extends Section implements HasAriaLabel {
+    class Sidebar extends Section implements HasAriaLabel, Focusable<Section> {
         private final CustomerEditor editor;
         private final Button edit;
         private final Button save;
@@ -223,6 +223,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
 
             addClassNames(BoxShadow.SMALL, Display.FLEX, FlexDirection.COLUMN, Position.RELATIVE);
             setAriaLabelledBy("sidebar-title");
+            setTabIndex(0);
             setVisible(false);
             setWidth(25, Unit.REM);
 
