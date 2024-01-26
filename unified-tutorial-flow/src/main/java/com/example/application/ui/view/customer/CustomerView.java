@@ -267,7 +267,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
 
         public void setEditMode(boolean editMode) {
             if (editMode) {
-                title.setText("Edit details");
+                title.setText("Edit " + getCustomerName());
             } else {
                 title.setText(getCustomerName());
             }
