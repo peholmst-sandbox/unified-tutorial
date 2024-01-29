@@ -39,7 +39,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
     private static final String CUSTOMER_ID_ROUTE_PARAM = "customerId";
     private static final String ACTION_ROUTE_PARAM = "action";
     private static final String EDIT_ACTION = "edit";
-    public static final String SIDEBAR_TITLE_ID = "sidebar-title";
+    private static final String SIDEBAR_TITLE_ID = "sidebar-title";
 
     static RouteParameters createShowCustomerRouteParameters(Customer customer) {
         return new RouteParameters(CUSTOMER_ID_ROUTE_PARAM, customer.getId().toString());
@@ -210,8 +210,6 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         private final H2 title;
 
         Sidebar() {
-            getStyle().set("transition", "margin-inline-end var(--vaadin-app-layout-transition), visibility var(--vaadin-app-layout-transition)");
-
             editor = new CustomerEditor(customerService, industryService);
             editor.addClassNames(Flex.GROW, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
 
@@ -321,20 +319,24 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
 
         @Override
         public void focus() {
-            Element element = getElement();
+            // Needed to avoid layout shifting when focusing the sidebar during transition
+            Element element = this.getElement();
             element.executeJs("setTimeout(function(){$0.focus({preventScroll:true})},0)", new Serializable[]{element});
         }
 
         @Override
         public void setVisible(boolean visible) {
+            // Elements with 'visibility: hidden' can not be focused. Therefor, we don't transition 'visibility' when opening the sidebar.
             if (visible) {
                 getStyle()
                         .set("margin-inline-end", "0")
+                        .set("transition", "margin-inline-end var(--vaadin-app-layout-transition)")
                         .set("visibility", "visible");
                 focus();
             } else {
                 getStyle()
                         .set("margin-inline-end", "-" + getWidth())
+                        .set("transition", "margin-inline-end var(--vaadin-app-layout-transition), visibility var(--vaadin-app-layout-transition)")
                         .set("visibility", "hidden");
             }
         }
