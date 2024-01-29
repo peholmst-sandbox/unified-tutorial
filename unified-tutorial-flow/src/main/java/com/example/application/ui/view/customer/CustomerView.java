@@ -19,6 +19,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoIcon;
@@ -26,6 +27,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import jakarta.annotation.Nullable;
 import org.springframework.data.domain.PageRequest;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
     private static final String CUSTOMER_ID_ROUTE_PARAM = "customerId";
     private static final String ACTION_ROUTE_PARAM = "action";
     private static final String EDIT_ACTION = "edit";
+    public static final String SIDEBAR_TITLE_ID = "sidebar-title";
 
     static RouteParameters createShowCustomerRouteParameters(Customer customer) {
         return new RouteParameters(CUSTOMER_ID_ROUTE_PARAM, customer.getId().toString());
@@ -85,7 +88,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         add = new Button("Add customer", LumoIcon.PLUS.create(), event -> add());
         add.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        addClassNames(Display.FLEX, Height.FULL);
+        addClassNames(Display.FLEX, Height.FULL, Overflow.HIDDEN, Width.FULL);
 
         add(grid);
         add(sidebar);
@@ -208,6 +211,8 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         private final H2 title;
 
         Sidebar() {
+            getStyle().set("transition", "margin-inline-end var(--vaadin-app-layout-transition)");
+
             editor = new CustomerEditor(customerService, industryService);
             editor.addClassNames(Flex.GROW, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
 
@@ -232,10 +237,10 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
 
             title = new H2();
             title.addClassNames(FontSize.XLARGE, LineHeight.SMALL);
-            title.setId("sidebar-title");
+            title.setId(SIDEBAR_TITLE_ID);
 
             addClassNames(BoxShadow.SMALL, Display.FLEX, FlexDirection.COLUMN, Position.RELATIVE);
-            setAriaLabelledBy("sidebar-title");
+            setAriaLabelledBy(SIDEBAR_TITLE_ID);
             setTabIndex(0);
             setVisible(false);
             setWidth(25, Unit.REM);
@@ -313,6 +318,21 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
 
         public String getCustomerName() {
             return editor.getCustomer().map(Customer::getName).orElse("N/A");
+        }
+
+        @Override
+        public void focus() {
+            Element element = getElement();
+            element.executeJs("setTimeout(function(){$0.focus({preventScroll:true})},0)", new Serializable[]{element});
+        }
+
+        @Override
+        public void setVisible(boolean visible) {
+            if (visible) {
+                getStyle().set("margin-inline-end", "0");
+            } else {
+                getStyle().set("margin-inline-end", "-" + getWidth());
+            }
         }
     }
 }
