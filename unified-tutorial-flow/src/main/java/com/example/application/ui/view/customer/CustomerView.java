@@ -88,7 +88,8 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         add = new Button("Add customer", LumoIcon.PLUS.create(), event -> add());
         add.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        addClassNames(Display.FLEX, Height.FULL, Overflow.HIDDEN, Width.FULL);
+        addClassNames(Display.GRID, Height.FULL, Overflow.HIDDEN, Width.FULL);
+        getStyle().set("transition", "grid-template-columns var(--vaadin-app-layout-transition)");
 
         add(grid);
         add(sidebar);
@@ -176,6 +177,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
                         sidebar.setCustomer(customer);
                         sidebar.setEditMode(action.equals(EDIT_ACTION));
                         sidebar.setVisible(true);
+                        getStyle().set("grid-template-columns", "1fr " + sidebar.getWidth());
                     },
                     () -> {
                         Notification.show("Customer not found");
@@ -185,8 +187,11 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         } else {
             sidebar.setVisible(false);
             sidebar.setCustomer(null);
+            getStyle().set("grid-template-columns", "1fr 0rem");
         }
     }
+
+
 
     @Override
     public void beforeLeave(BeforeLeaveEvent event) {
@@ -210,8 +215,6 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         private final H2 title;
 
         Sidebar() {
-            addClassNames(Position.RELATIVE);
-            
             editor = new CustomerEditor(customerService, industryService);
             editor.addClassNames(Flex.GROW, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
 
@@ -331,14 +334,12 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
             // Elements with 'visibility: hidden' can not be focused. Therefor, we don't transition 'visibility' when opening the sidebar.
             if (visible) {
                 getStyle()
-                        .set("margin-inline-end", "0")
-                        .set("transition", "margin-inline-end var(--vaadin-app-layout-transition)")
+                        .set("transition", "none")
                         .set("visibility", "visible");
                 focus();
             } else {
                 getStyle()
-                        .set("margin-inline-end", "-" + getWidth())
-                        .set("transition", "margin-inline-end var(--vaadin-app-layout-transition), visibility var(--vaadin-app-layout-transition)")
+                        .set("transition", "visibility var(--vaadin-app-layout-transition)")
                         .set("visibility", "hidden");
             }
         }
