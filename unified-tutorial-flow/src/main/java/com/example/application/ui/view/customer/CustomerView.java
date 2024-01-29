@@ -176,7 +176,6 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
                         sidebar.setCustomer(customer);
                         sidebar.setEditMode(action.equals(EDIT_ACTION));
                         sidebar.setVisible(true);
-                        sidebar.focus();
                     },
                     () -> {
                         Notification.show("Customer not found");
@@ -211,7 +210,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         private final H2 title;
 
         Sidebar() {
-            getStyle().set("transition", "margin-inline-end var(--vaadin-app-layout-transition)");
+            getStyle().set("transition", "margin-inline-end var(--vaadin-app-layout-transition), visibility var(--vaadin-app-layout-transition)");
 
             editor = new CustomerEditor(customerService, industryService);
             editor.addClassNames(Flex.GROW, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
@@ -329,9 +328,14 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         @Override
         public void setVisible(boolean visible) {
             if (visible) {
-                getStyle().set("margin-inline-end", "0");
+                getStyle()
+                        .set("margin-inline-end", "0")
+                        .set("visibility", "visible");
+                focus();
             } else {
-                getStyle().set("margin-inline-end", "-" + getWidth());
+                getStyle()
+                        .set("margin-inline-end", "-" + getWidth())
+                        .set("visibility", "hidden");
             }
         }
     }
