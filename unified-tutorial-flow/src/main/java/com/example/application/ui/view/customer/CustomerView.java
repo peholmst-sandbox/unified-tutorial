@@ -19,6 +19,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoIcon;
@@ -26,6 +27,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import jakarta.annotation.Nullable;
 import org.springframework.data.domain.PageRequest;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,8 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
     private static final String CUSTOMER_ID_ROUTE_PARAM = "customerId";
     private static final String ACTION_ROUTE_PARAM = "action";
     private static final String EDIT_ACTION = "edit";
+    private static final String SIDEBAR_TITLE_ID = "sidebar-title";
+    public static final int SIDEBAR_WIDTH = 25;
 
     static RouteParameters createShowCustomerRouteParameters(Customer customer) {
         return new RouteParameters(CUSTOMER_ID_ROUTE_PARAM, customer.getId().toString());
@@ -85,7 +89,9 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         add = new Button("Add customer", LumoIcon.PLUS.create(), event -> add());
         add.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        addClassNames(Display.FLEX, Height.FULL);
+        addClassNames(BoxSizing.BORDER, Display.FLEX, Height.FULL, Overflow.HIDDEN, Position.RELATIVE, Width.FULL);
+        // Needed for the sidebar animation
+        getStyle().set("transition", "padding var(--vaadin-app-layout-transition)");
 
         add(grid);
         add(sidebar);
@@ -170,6 +176,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         if (customerId > 0) {
             customerService.get(customerId).ifPresentOrElse(
                     customer -> {
+                        getStyle().set("padding-inline-end", SIDEBAR_WIDTH + "rem");
                         sidebar.setCustomer(customer);
                         sidebar.setEditMode(action.equals(EDIT_ACTION));
                         sidebar.setVisible(true);
@@ -181,6 +188,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
                         showAllCustomers();
                     });
         } else {
+            getStyle().remove("padding-inline-end");
             sidebar.setVisible(false);
             sidebar.setCustomer(null);
         }
@@ -208,6 +216,10 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         private final H2 title;
 
         Sidebar() {
+            addClassNames(Height.FULL, Position.ABSOLUTE);
+            // Position the sidebar to the right
+            getStyle().set("inset-inline-end", "0");
+
             editor = new CustomerEditor(customerService, industryService);
             editor.addClassNames(Flex.GROW, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
 
@@ -232,13 +244,13 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
 
             title = new H2();
             title.addClassNames(FontSize.XLARGE, LineHeight.SMALL);
-            title.setId("sidebar-title");
+            title.setId(SIDEBAR_TITLE_ID);
 
-            addClassNames(BoxShadow.SMALL, Display.FLEX, FlexDirection.COLUMN, Position.RELATIVE);
-            setAriaLabelledBy("sidebar-title");
+            addClassNames(BoxShadow.SMALL, Display.FLEX, FlexDirection.COLUMN);
+            setAriaLabelledBy(SIDEBAR_TITLE_ID);
             setTabIndex(0);
             setVisible(false);
-            setWidth(25, Unit.REM);
+            setWidth(SIDEBAR_WIDTH, Unit.REM);
 
             var header = new Div(title, close);
             header.addClassNames(AlignItems.CENTER, Display.FLEX, Height.XLARGE, JustifyContent.BETWEEN,
@@ -313,6 +325,29 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
 
         public String getCustomerName() {
             return editor.getCustomer().map(Customer::getName).orElse("N/A");
+        }
+
+        @Override
+        public void focus() {
+            // Needed to avoid layout shifting when focusing the sidebar during transition
+            Element element = this.getElement();
+            element.executeJs("setTimeout(function(){$0.focus({preventScroll:true})},0)", new Serializable[]{element});
+        }
+
+        @Override
+        public void setVisible(boolean visible) {
+            // Elements with 'visibility: hidden' can not be focused. Therefor, we don't transition 'visibility' when opening the sidebar.
+            if (visible) {
+                getStyle()
+                        .set("transform", "translateX(0%)")
+                        .set("transition", "transform var(--vaadin-app-layout-transition)")
+                        .set("visibility", "visible");
+            } else {
+                getStyle()
+                        .set("transform", "translateX(100%)")
+                        .set("transition", "transform var(--vaadin-app-layout-transition), visibility var(--vaadin-app-layout-transition)")
+                        .set("visibility", "hidden");
+            }
         }
     }
 }
