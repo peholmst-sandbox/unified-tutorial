@@ -210,6 +210,8 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         private final H2 title;
 
         Sidebar() {
+            addClassNames(Position.RELATIVE);
+            
             editor = new CustomerEditor(customerService, industryService);
             editor.addClassNames(Flex.GROW, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
 
