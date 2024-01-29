@@ -180,7 +180,6 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
                         sidebar.setCustomer(customer);
                         sidebar.setEditMode(action.equals(EDIT_ACTION));
                         sidebar.setVisible(true);
-                        sidebar.focus();
                     },
                     () -> {
                         Notification.show("Customer not found");
@@ -342,6 +341,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
                         .set("transform", "translateX(0%)")
                         .set("transition", "transform var(--vaadin-app-layout-transition)")
                         .set("visibility", "visible");
+                focus();
             } else {
                 getStyle()
                         .set("transform", "translateX(100%)")
