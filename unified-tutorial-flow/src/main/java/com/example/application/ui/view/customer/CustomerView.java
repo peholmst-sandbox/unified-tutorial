@@ -215,10 +215,6 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         private final H2 title;
 
         Sidebar() {
-            addClassNames(Height.FULL, Position.ABSOLUTE);
-            // Position the sidebar to the right
-            getStyle().set("inset-inline-end", "0");
-
             editor = new CustomerEditor(customerService, industryService);
             editor.addClassNames(Flex.GROW, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
 
@@ -245,7 +241,9 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
             title.addClassNames(FontSize.XLARGE, LineHeight.SMALL);
             title.setId(SIDEBAR_TITLE_ID);
 
-            addClassNames(BoxShadow.SMALL, Display.FLEX, FlexDirection.COLUMN);
+            addClassNames(BoxShadow.SMALL, Display.FLEX, FlexDirection.COLUMN, Height.FULL, Position.ABSOLUTE);
+            // Position the sidebar to the right
+            getStyle().set("inset-inline-end", "0");
             setAriaLabelledBy(SIDEBAR_TITLE_ID);
             setTabIndex(0);
             setVisible(false);
