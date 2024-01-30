@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @PageTitle("Customers")
 @Route(value = "customer/:customerId?/:action?(edit)", layout = MainLayout.class)
@@ -108,7 +109,17 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
 
     private void configureGrid() {
         grid.setHeightFull();
-        grid.addColumn(Customer.PROP_NAME).setAutoWidth(true);
+
+        grid.addColumn(new ComponentRenderer<>(RouterLink::new, (link, customer) -> {
+                    link.setText(customer.getName());
+                    link.setRoute(CustomerView.class, createShowCustomerRouteParameters(customer));
+                    link.getElement().setAttribute("aria-label", "Show details of " + customer.getName());
+                    link.getElement().setAttribute("title", "Show details of " + customer.getName());
+                }))
+                .setAutoWidth(true)
+                .setFlexGrow(1)
+                .setHeader("Name")
+                .setSortProperty(Customer.PROP_NAME);
         grid.addColumn(Customer.PROP_COUNTRY).setAutoWidth(true).setSortable(true);
         grid.addColumn(Customer.PROP_FIRST_CONTACT).setAutoWidth(true);
         grid.addColumn(new ComponentRenderer<>(HorizontalLayout::new, (layout, customer) -> {
@@ -117,27 +128,23 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
                 .setAutoWidth(true)
                 .setFlexGrow(1)
                 .setHeader("Industries");
-        grid.addColumn(new ComponentRenderer<>(RouterLink::new, (link, customer) -> {
-                    var icon = VaadinIcon.INFO_CIRCLE.create();
-                    icon.addClassName(IconSize.SMALL);
 
-                    link.add(icon);
-                    link.addClassNames(AlignItems.CENTER, BoxSizing.BORDER, Display.FLEX, Height.MEDIUM,
-                            JustifyContent.CENTER, Width.MEDIUM);
-                    link.setRoute(CustomerView.class, createShowCustomerRouteParameters(customer));
-                    link.getElement().setAttribute("aria-label", "Show details of " + customer.getName());
-                    link.getElement().setAttribute("title", "Show details of " + customer.getName());
-                }))
-                .setAutoWidth(true)
-                .setFrozenToEnd(true)
-                .setFlexGrow(0);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setItems(query -> customerService.list(
                 PageRequest.of(
                         query.getPage(),
                         query.getPageSize(),
                         VaadinSpringDataHelpers.toSpringDataSort(query))).stream());
-        grid.setSelectionMode(Grid.SelectionMode.NONE);
+        grid.asSingleSelect().addValueChangeListener(event -> {
+            if (event.isFromClient()) {
+                var customer = event.getValue();
+                if (customer != null) {
+                    showCustomerDetails(customer);
+                } else {
+                    showAllCustomers();
+                }
+            }
+        });
 
         var contextMenu = new GridContextMenu<>(grid);
 
@@ -174,15 +181,17 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
                         sidebar.setEditMode(action.equals(EDIT_ACTION));
                         sidebar.setVisible(true);
                         sidebar.focus();
+                        grid.select(customer);
                     },
                     () -> {
                         Notification.show("Customer not found");
                         grid.getDataProvider().refreshAll();
-                        showAllCustomers();
+                        showAllCustomers(); // TODO Should this be a reroute or forward operation?
                     });
         } else {
             sidebar.setVisible(false);
             sidebar.setCustomer(null);
+            grid.deselectAll();
         }
     }
 
@@ -194,7 +203,10 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
             confirmDialog.setHeader("Discard changes to '%s'?".formatted(sidebar.getCustomerName()));
             confirmDialog.setText("You have unsaved changes. Are you sure you want to leave?");
             confirmDialog.setConfirmButton("Discard", e -> continuationAction.proceed());
-            confirmDialog.setCancelButton("Cancel", e -> continuationAction.cancel());
+            confirmDialog.setCancelButton("Cancel", e -> {
+                continuationAction.cancel();
+                sidebar.getCustomer().ifPresent(grid::select);
+            });
             confirmDialog.open();
         }
     }
@@ -253,6 +265,10 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
 
         public void setCustomer(@Nullable Customer customer) {
             editor.setCustomer(customer);
+        }
+
+        public Optional<Customer> getCustomer() {
+            return editor.getCustomer();
         }
 
         public void setEditMode(boolean editMode) {
