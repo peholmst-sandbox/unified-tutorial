@@ -86,7 +86,8 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         add = new Button("Add customer", LumoIcon.PLUS.create(), event -> add());
         add.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        addClassNames(Display.FLEX, Height.FULL);
+        addClassNames(Display.GRID, Height.FULL, Overflow.HIDDEN, Width.FULL);
+        getStyle().set("transition", "grid-template-columns var(--vaadin-app-layout-transition)");
 
         add(grid);
         add(sidebar);
@@ -180,7 +181,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
                         sidebar.setCustomer(customer);
                         sidebar.setEditMode(action.equals(EDIT_ACTION));
                         sidebar.setVisible(true);
-                        sidebar.focus();
+                        getStyle().set("grid-template-columns", "1fr " + sidebar.getWidth());
                         grid.select(customer);
                     },
                     () -> {
@@ -191,6 +192,7 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
         } else {
             sidebar.setVisible(false);
             sidebar.setCustomer(null);
+            getStyle().set("grid-template-columns", "1fr 0rem");
             grid.deselectAll();
         }
     }
@@ -329,6 +331,28 @@ public final class CustomerView extends Main implements BeforeEnterObserver, Bef
 
         public String getCustomerName() {
             return editor.getCustomer().map(Customer::getName).orElse("N/A");
+        }
+
+        @Override
+        public void focus() {
+            // Needed to avoid layout shifting when focusing the sidebar during transition
+            var element = this.getElement();
+            element.executeJs("setTimeout(function(){$0.focus({preventScroll:true})},0)", element);
+        }
+
+        @Override
+        public void setVisible(boolean visible) {
+            // Elements with 'visibility: hidden' can not be focused. Therefor, we don't transition 'visibility' when opening the sidebar.
+            if (visible) {
+                getStyle()
+                        .set("transition", "none")
+                        .set("visibility", "visible");
+                focus();
+            } else {
+                getStyle()
+                        .set("transition", "visibility var(--vaadin-app-layout-transition)")
+                        .set("visibility", "hidden");
+            }
         }
     }
 }
