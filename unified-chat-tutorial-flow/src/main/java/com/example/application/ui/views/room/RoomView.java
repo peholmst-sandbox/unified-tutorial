@@ -3,6 +3,7 @@ package com.example.application.ui.views.room;
 import com.example.application.service.ChatMessage;
 import com.example.application.service.ChatService;
 import com.example.application.service.NoSuchChatRoomException;
+import com.example.application.ui.CurrentUser;
 import com.example.application.ui.MainLayout;
 import com.example.application.ui.views.lobby.LobbyView;
 import com.vaadin.flow.component.AttachEvent;
@@ -11,6 +12,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -18,26 +20,31 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.lumo.LumoUtility;
+import jakarta.annotation.security.PermitAll;
+
+import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 @Route(value = "chatroom", layout = MainLayout.class)
+@PermitAll
 public class RoomView extends VerticalLayout implements HasUrlParameter<Long>, HasDynamicTitle {
 
     private static final int HISTORY_SIZE = 20; // A small number to demonstrate the feature
     private final ChatService chatService;
+    private final CurrentUser currentUser;
     private final Div messagesDiv;
     private final TextField messageField;
     private final Button sendMessageButton;
     private String roomName;
     private long roomId;
 
-    public RoomView(ChatService chatService) {
+    public RoomView(ChatService chatService, CurrentUser currentUser) {
         this.chatService = chatService;
+        this.currentUser = currentUser;
         setSizeFull();
 
         messagesDiv = new Div();
         messagesDiv.setSizeFull();
-        messagesDiv.addClassNames(LumoUtility.Overflow.AUTO, LumoUtility.Border.ALL);
+        messagesDiv.addClassNames(Overflow.AUTO, Border.ALL);
         add(messagesDiv);
 
         messageField = new TextField();
@@ -82,7 +89,7 @@ public class RoomView extends VerticalLayout implements HasUrlParameter<Long>, H
     }
 
     private void onNewMessage(ChatMessage chatMessage) {
-        UI.getCurrent().access(() -> {
+        getUI().ifPresent(ui -> ui.access(() -> {
             var messageComponent = new MessageComponent(chatMessage);
             messagesDiv.add(messageComponent);
 
@@ -91,7 +98,13 @@ public class RoomView extends VerticalLayout implements HasUrlParameter<Long>, H
             }
 
             messageComponent.scrollIntoView();
-        });
+
+            if (chatMessage.author().equals(currentUser.getName())) {
+                messageComponent.addClassNames(Background.CONTRAST_10);
+            } else {
+                Notification.show("New message from %s".formatted(chatMessage.author()));
+            }
+        }));
     }
 
     @Override

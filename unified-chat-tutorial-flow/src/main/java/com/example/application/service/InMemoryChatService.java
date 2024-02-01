@@ -1,8 +1,11 @@
 package com.example.application.service;
 
+import com.example.application.security.Roles;
 import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
@@ -18,6 +21,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
+@Secured(Roles.USER)
 class InMemoryChatService implements ChatService {
 
     private final AtomicLong nextRoomId = new AtomicLong();
@@ -34,6 +38,7 @@ class InMemoryChatService implements ChatService {
     }
 
     @Override
+    @Secured(Roles.ADMIN)
     public void createRoom(String name) {
         var roomId = nextRoomId.getAndIncrement();
         var controller = new ChatRoomController(roomId, name, Clock.systemUTC());
@@ -61,7 +66,7 @@ class InMemoryChatService implements ChatService {
 
     @Override
     public void postMessage(long roomId, String message) {
-        var author = "Joe Cool"; // TODO Fetch from SecurityContext
+        var author = SecurityContextHolder.getContext().getAuthentication().getName();
         getChatRoom(roomId).post(author, message);
     }
 

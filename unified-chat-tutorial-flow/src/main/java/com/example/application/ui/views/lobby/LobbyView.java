@@ -1,11 +1,14 @@
 package com.example.application.ui.views.lobby;
 
+import com.example.application.security.Roles;
 import com.example.application.service.ChatRoom;
 import com.example.application.service.ChatService;
+import com.example.application.ui.CurrentUser;
 import com.example.application.ui.MainLayout;
 import com.example.application.ui.views.room.RoomView;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -14,9 +17,11 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
+import jakarta.annotation.security.PermitAll;
 
 @Route(value = "", layout = MainLayout.class)
 @PageTitle("Lobby")
+@PermitAll
 public class LobbyView extends VerticalLayout {
 
     private final ChatService chatService;
@@ -24,7 +29,7 @@ public class LobbyView extends VerticalLayout {
     private final TextField roomNameField;
     private final Button addRoomButton;
 
-    public LobbyView(ChatService chatService) {
+    public LobbyView(ChatService chatService, CurrentUser currentUser) {
         this.chatService = chatService;
         setSizeFull();
 
@@ -44,13 +49,16 @@ public class LobbyView extends VerticalLayout {
         roomNameField.setPlaceholder("New chat room name");
 
         addRoomButton = new Button("Add room", event -> addRoom());
+        addRoomButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         addRoomButton.addClickShortcut(Key.ENTER);
         addRoomButton.setDisableOnClick(true);
 
-        var toolbar = new HorizontalLayout(roomNameField, addRoomButton);
-        toolbar.setWidthFull();
-        toolbar.expand(roomNameField);
-        add(toolbar);
+        if (currentUser.hasRole(Roles.ADMIN)) {
+            var toolbar = new HorizontalLayout(roomNameField, addRoomButton);
+            toolbar.setWidthFull();
+            toolbar.expand(roomNameField);
+            add(toolbar);
+        }
 
         refreshRooms();
     }
