@@ -11,7 +11,7 @@ export const routes = protectRoutes([
     handle: { title: 'Main' },
     children: [
         {path: '/', element: <LobbyView/>, handle: {title: 'Lobby', requiresLogin: true}},
-        {path: '/chatroom', element: <RoomView/>, handle: {title: 'Chat Room', requiresLogin: true}},
+        {path: '/chatroom/:roomId', element: <RoomView/>, handle: {title: 'Chat Room', requiresLogin: true}},
     ],
   },
   { path: '/login', element: <LoginView /> },

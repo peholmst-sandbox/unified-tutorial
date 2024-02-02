@@ -5,11 +5,9 @@ import dev.hilla.BrowserCallable;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
 @BrowserCallable
 @PermitAll
 public class CurrentUser {
