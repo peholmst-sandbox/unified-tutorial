@@ -7,22 +7,22 @@ import com.example.application.ui.CurrentUser;
 import com.example.application.ui.MainLayout;
 import com.example.application.ui.views.lobby.LobbyView;
 import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.Key;
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.messages.MessageInput;
+import com.vaadin.flow.component.messages.MessageList;
+import com.vaadin.flow.component.messages.MessageListItem;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 
-import static com.vaadin.flow.theme.lumo.LumoUtility.*;
+import java.util.LinkedList;
+import java.util.List;
+
+import static com.vaadin.flow.theme.lumo.LumoUtility.Background;
+import static com.vaadin.flow.theme.lumo.LumoUtility.Border;
 
 @Route(value = "chatroom", layout = MainLayout.class)
 @PermitAll
@@ -31,9 +31,8 @@ public class RoomView extends VerticalLayout implements HasUrlParameter<Long>, H
     private static final int HISTORY_SIZE = 20; // A small number to demonstrate the feature
     private final ChatService chatService;
     private final CurrentUser currentUser;
-    private final Div messagesDiv;
-    private final TextField messageField;
-    private final Button sendMessageButton;
+    private final MessageList messageList;
+    private final List<MessageListItem> messageListItemList;
     private String roomName;
     private long roomId;
 
@@ -42,35 +41,22 @@ public class RoomView extends VerticalLayout implements HasUrlParameter<Long>, H
         this.currentUser = currentUser;
         setSizeFull();
 
-        messagesDiv = new Div();
-        messagesDiv.setSizeFull();
-        messagesDiv.addClassNames(Overflow.AUTO, Border.ALL);
-        add(messagesDiv);
+        messageListItemList = new LinkedList<>();
 
-        messageField = new TextField();
-        sendMessageButton = new Button("Send", event -> sendMessage());
-        sendMessageButton.setDisableOnClick(true);
-        sendMessageButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        sendMessageButton.addClickShortcut(Key.ENTER);
-        Button leaveButton = new Button("Leave", event -> UI.getCurrent().navigate(LobbyView.class));
-        leaveButton.addClickShortcut(Key.ESCAPE);
+        messageList = new MessageList();
+        messageList.addClassNames(Border.ALL);
+        messageList.setSizeFull();
+        add(messageList);
 
-        var toolbar = new HorizontalLayout(messageField, sendMessageButton, leaveButton);
-        toolbar.setWidthFull();
-        toolbar.expand(messageField);
-        add(toolbar);
+        var messageInput = new MessageInput(event -> sendMessage(event.getValue()));
+        messageInput.setWidthFull();
+
+        add(messageInput);
     }
 
-    private void sendMessage() {
-        try {
-            var message = messageField.getValue();
-            if (!message.isBlank()) {
-                chatService.postMessage(roomId, message);
-            }
-            messageField.clear();
-            messageField.focus();
-        } finally {
-            sendMessageButton.setEnabled(true);
+    private void sendMessage(String message) {
+        if (!message.isBlank()) {
+            chatService.postMessage(roomId, message);
         }
     }
 
@@ -82,29 +68,34 @@ public class RoomView extends VerticalLayout implements HasUrlParameter<Long>, H
     }
 
     private void loadHistory() {
-        chatService.messageHistory(roomId, HISTORY_SIZE).stream().map(MessageComponent::new).forEach(messagesDiv::add);
-        if (messagesDiv.getComponentCount() > 0) {
-            messagesDiv.getComponentAt(messagesDiv.getComponentCount() - 1).scrollIntoView();
-        }
+        messageListItemList.clear();
+        chatService.messageHistory(roomId, HISTORY_SIZE).stream().map(this::createMessageListItem).forEach(messageListItemList::add);
+        messageList.setItems(messageListItemList);
     }
 
     private void onNewMessage(ChatMessage chatMessage) {
         getUI().ifPresent(ui -> ui.access(() -> {
-            var messageComponent = new MessageComponent(chatMessage);
-            messagesDiv.add(messageComponent);
+            var messageListItem = createMessageListItem(chatMessage);
+            messageListItemList.add(messageListItem);
 
-            if (messagesDiv.getComponentCount() > HISTORY_SIZE) {
-                messagesDiv.getComponentAt(0).removeFromParent();
+            if (messageListItemList.size() > HISTORY_SIZE) {
+                messageListItemList.removeFirst();
             }
 
-            messageComponent.scrollIntoView();
-
-            if (chatMessage.author().equals(currentUser.getName())) {
-                messageComponent.addClassNames(Background.CONTRAST_10);
-            } else {
+            if (!chatMessage.author().equals(currentUser.getName())) {
                 Notification.show("New message from %s".formatted(chatMessage.author()));
             }
+
+            messageList.setItems(messageListItemList);
         }));
+    }
+
+    private MessageListItem createMessageListItem(ChatMessage chatMessage) {
+        var item = new MessageListItem(chatMessage.message(), chatMessage.timestamp(), chatMessage.author());
+        if (chatMessage.author().equals(currentUser.getName())) {
+            item.addClassNames(Background.CONTRAST_10);
+        }
+        return item;
     }
 
     @Override
