@@ -3,7 +3,6 @@ package com.example.application.ui;
 import com.example.application.ui.views.lobby.LobbyView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
-import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
@@ -50,8 +49,6 @@ public class MainLayout extends AppLayout {
     }
 
     private void addDrawerContent() {
-        var avatar = new Avatar(currentUser.getName());
-
         var appName = new Span("Vaadin Chat");
         appName.addClassNames(AlignItems.CENTER, Display.FLEX, FontSize.LARGE, FontWeight.SEMIBOLD, Height.XLARGE,
                 Padding.Horizontal.MEDIUM);
