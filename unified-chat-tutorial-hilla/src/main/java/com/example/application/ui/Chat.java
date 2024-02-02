@@ -1,10 +1,12 @@
 package com.example.application.ui;
 
+import com.example.application.service.ChatMessage;
 import com.example.application.service.ChatRoom;
 import com.example.application.service.ChatService;
 import dev.hilla.BrowserCallable;
 import dev.hilla.Nonnull;
 import jakarta.annotation.security.PermitAll;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -26,5 +28,21 @@ public class Chat {
 
     public void createRoom(@Nonnull String name) {
         chatService.createRoom(name);
+    }
+
+    public @Nonnull String roomName(long roomId) {
+        return chatService.roomName(roomId);
+    }
+
+    public @Nonnull Flux<@Nonnull ChatMessage> liveMessages(long roomId) {
+        return chatService.liveMessages(roomId);
+    }
+
+    public @Nonnull List<@Nonnull ChatMessage> messageHistory(long roomId, int fetchMax) {
+        return chatService.messageHistory(roomId, fetchMax);
+    }
+
+    public void postMessage(long roomId, @Nonnull String message) {
+        chatService.postMessage(roomId, message);
     }
 }
