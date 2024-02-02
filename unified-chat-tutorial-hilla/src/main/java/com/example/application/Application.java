@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * and some desktop browsers.
  */
 @SpringBootApplication
-@Theme(value = "hilla-with-auth")
+@Theme(value = "unified-chat-tutorial-hilla")
 public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {
