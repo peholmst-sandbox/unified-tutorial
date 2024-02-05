@@ -6,8 +6,13 @@ import {MessageList, MessageListItem} from "@hilla/react-components/MessageList"
 import {MessageInput} from "@hilla/react-components/MessageInput";
 import {Subscription} from "@hilla/frontend";
 import ChatMessage from "Frontend/generated/com/example/application/service/ChatMessage";
+import {useAuth} from "Frontend/util/auth";
+import {Notification} from '@hilla/react-components/Notification.js';
+
+const HISTORY_SIZE = 20; // A small number to demonstrate the feature
 
 export default function RoomView() {
+    const {state} = useAuth();
     const navigate = useNavigate();
     const params = useParams();
     const [roomId, setRoomId] = useState<number | undefined>()
@@ -33,8 +38,14 @@ export default function RoomView() {
             Chat.roomName(roomId).then(
                 result => {
                     setRoomName(result);
-                    Chat.messageHistory(roomId, 50).then(oldMessages => {
-                            oldMessages.forEach(receiveMessage);
+                    Chat.messageHistory(roomId, HISTORY_SIZE).then(oldMessages => {
+                            setMessages(oldMessages.map(message =>
+                                ({
+                                    text: message.message,
+                                    userName: message.author,
+                                    time: message.timestamp,
+                                })
+                            ));
                             setSubscription(Chat.liveMessages(roomId)
                                 .onNext(message => {
                                     receiveMessage(message);
@@ -67,11 +78,21 @@ export default function RoomView() {
 
     const receiveMessage = (message: ChatMessage) => {
         setMessages(prev => {
-            return [...prev, {
+            var newMessages = [...prev, {
                 text: message.message,
                 userName: message.author,
                 time: message.timestamp,
             }];
+
+            if (newMessages.length > HISTORY_SIZE) {
+                newMessages = newMessages.slice(newMessages.length - HISTORY_SIZE);
+            }
+
+            if (state.user?.name !== message.author) {
+                Notification.show(`New message from ${message.author}`);
+            }
+
+            return newMessages;
         });
     };
 
