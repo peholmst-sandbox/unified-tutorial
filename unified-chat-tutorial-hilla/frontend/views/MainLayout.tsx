@@ -2,8 +2,8 @@ import {AppLayout} from '@hilla/react-components/AppLayout.js';
 import {DrawerToggle} from '@hilla/react-components/DrawerToggle.js';
 import Placeholder from 'Frontend/components/placeholder/Placeholder.js';
 import {useAuth} from 'Frontend/util/auth.js';
-import {useRouteMetadata} from 'Frontend/util/routing.js';
-import {Suspense, useEffect} from 'react';
+import {dynamicPageTitle, useRouteMetadata} from 'Frontend/util/routing.js';
+import {Suspense} from 'react';
 import {Outlet} from 'react-router-dom';
 import {SideNav} from "@hilla/react-components/SideNav";
 import {SideNavItem} from "@hilla/react-components/SideNavItem";
@@ -11,12 +11,14 @@ import {Icon} from "@hilla/react-components/Icon";
 import {Scroller} from "@hilla/react-components/Scroller";
 import {Button} from "@hilla/react-components/Button";
 import {Tooltip} from "@hilla/react-components/Tooltip";
+import {computed, effect} from "@preact/signals-react";
 
 export default function MainLayout() {
-    const currentTitle = useRouteMetadata()?.title ?? 'Vaadin Chat'; // TODO How to get dynamic title?
-    useEffect(() => {
-        document.title = currentTitle;
-    }, [currentTitle]);
+    const currentTitle = computed(() => dynamicPageTitle.value ?? useRouteMetadata()?.title ?? 'Vaadin Chat');
+
+    effect(() => {
+        document.title = currentTitle.value;
+    });
 
     const {state, logout} = useAuth();
     return (

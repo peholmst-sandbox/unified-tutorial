@@ -19,6 +19,7 @@
     "@hilla/react-crud": "2.5.6",
     "@hilla/react-form": "2.5.6",
     "@polymer/polymer": "3.5.1",
+    "@preact/signals-react": "^2.0.0",
     "@vaadin/bundles": "24.3.0",
     "@vaadin/common-frontend": "0.0.19",
     "@vaadin/router": "1.7.5",

@@ -1,4 +1,5 @@
-import { useMatches } from 'react-router-dom';
+import {useMatches} from 'react-router-dom';
+import {signal} from "@preact/signals-react";
 
 type RouteMetadata = {
   [key: string]: any;
@@ -13,3 +14,5 @@ export function useRouteMetadata(): RouteMetadata | undefined {
   const match = matches[matches.length - 1];
   return match?.handle as RouteMetadata | undefined;
 }
+
+export const dynamicPageTitle = signal<string | undefined>(undefined);
