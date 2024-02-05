@@ -39,13 +39,7 @@ export default function RoomView() {
                 result => {
                     setRoomName(result);
                     Chat.messageHistory(roomId, HISTORY_SIZE).then(oldMessages => {
-                            setMessages(oldMessages.map(message =>
-                                ({
-                                    text: message.message,
-                                    userName: message.author,
-                                    time: message.timestamp,
-                                })
-                            ));
+                            setMessages(oldMessages.map(messageToItem));
                             setSubscription(Chat.liveMessages(roomId)
                                 .onNext(message => {
                                     receiveMessage(message);
@@ -70,6 +64,16 @@ export default function RoomView() {
     }, [roomId]);
 
     // TODO Set page title to room name
+
+    const messageToItem = (message: ChatMessage): MessageListItem => {
+        return {
+            text: message.message,
+            userName: message.author,
+            time: message.timestamp,
+            theme: message.author === state.user?.name ? "current-user" : undefined,
+        };
+    };
+
     const sendMessage = (message: string) => {
         if (roomId !== undefined) {
             Chat.postMessage(roomId, message).then();
@@ -78,11 +82,7 @@ export default function RoomView() {
 
     const receiveMessage = (message: ChatMessage) => {
         setMessages(prev => {
-            var newMessages = [...prev, {
-                text: message.message,
-                userName: message.author,
-                time: message.timestamp,
-            }];
+            let newMessages = [...prev, messageToItem(message)];
 
             if (newMessages.length > HISTORY_SIZE) {
                 newMessages = newMessages.slice(newMessages.length - HISTORY_SIZE);
