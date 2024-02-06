@@ -8,6 +8,9 @@ import {useAuth} from "Frontend/util/auth";
 import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
 import {TextField} from "@hilla/react-components/TextField";
 import {Button} from "@hilla/react-components/Button";
+import {Link} from "react-router-dom";
+
+import {pageTitle} from "Frontend/views/MainLayout";
 
 type AddRoomProps = {
     onRoomAddedCallback?: () => void;
@@ -41,6 +44,7 @@ function AddRoom(props: AddRoomProps) {
 
 export default function LobbyView() {
     const {hasAccess} = useAuth();
+    pageTitle.value = "Lobby";
 
     const [rooms, setRooms] = useState<ChatRoom[]>([]);
 
@@ -58,7 +62,7 @@ export default function LobbyView() {
         <Grid className={"h-full w-full"} items={rooms}>
             <GridColumn header={"Room Name"}>
                 {({item}) => {
-                    return <a href={"chatroom/" + item.id}>{item.name}</a>
+                    return <Link to={"chatroom/" + item.id}>{item.name}</Link>
                 }}
             </GridColumn>
             <GridColumn header={"Last Message"}>

@@ -7,6 +7,7 @@ export default function LoginView() {
     const {login} = useAuth();
     const [hasError, setError] = useState<boolean>();
     const navigate = useNavigate();
+    document.title = "Login";
 
     return (
         <div className={"flex flex-col h-full w-full items-center justify-center gap-m"}>

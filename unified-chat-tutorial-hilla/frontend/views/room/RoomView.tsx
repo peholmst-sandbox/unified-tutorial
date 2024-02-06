@@ -8,7 +8,8 @@ import {Subscription} from "@hilla/frontend";
 import ChatMessage from "Frontend/generated/com/example/application/service/ChatMessage";
 import {useAuth} from "Frontend/util/auth";
 import {Notification} from '@hilla/react-components/Notification.js';
-import {dynamicPageTitle} from "Frontend/util/routing";
+
+import {pageTitle} from "Frontend/views/MainLayout";
 
 const HISTORY_SIZE = 20; // A small number to demonstrate the feature
 
@@ -37,7 +38,7 @@ export default function RoomView() {
         if (roomId !== undefined) {
             Chat.roomName(roomId).then(
                 result => {
-                    dynamicPageTitle.value = result;
+                    pageTitle.value = result;
                     Chat.messageHistory(roomId, HISTORY_SIZE).then(oldMessages => {
                             setMessages(oldMessages.map(messageToItem));
                             setSubscription(Chat.liveMessages(roomId)
@@ -62,8 +63,6 @@ export default function RoomView() {
             }
         };
     }, [roomId]);
-
-    // TODO Set page title to room name
 
     const messageToItem = (message: ChatMessage): MessageListItem => {
         return {

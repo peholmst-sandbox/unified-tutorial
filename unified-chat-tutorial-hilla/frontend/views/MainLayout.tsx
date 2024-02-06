@@ -2,7 +2,6 @@ import {AppLayout} from '@hilla/react-components/AppLayout.js';
 import {DrawerToggle} from '@hilla/react-components/DrawerToggle.js';
 import Placeholder from 'Frontend/components/placeholder/Placeholder.js';
 import {useAuth} from 'Frontend/util/auth.js';
-import {dynamicPageTitle, useRouteMetadata} from 'Frontend/util/routing.js';
 import {Suspense} from 'react';
 import {Outlet} from 'react-router-dom';
 import {SideNav} from "@hilla/react-components/SideNav";
@@ -11,16 +10,19 @@ import {Icon} from "@hilla/react-components/Icon";
 import {Scroller} from "@hilla/react-components/Scroller";
 import {Button} from "@hilla/react-components/Button";
 import {Tooltip} from "@hilla/react-components/Tooltip";
-import {computed, effect} from "@preact/signals-react";
+import {computed, effect, signal} from "@preact/signals-react";
+
+export const pageTitle = signal<string | undefined>(undefined);
 
 export default function MainLayout() {
-    const currentTitle = computed(() => dynamicPageTitle.value ?? useRouteMetadata()?.title ?? 'Vaadin Chat');
+    const currentTitle = computed(() => pageTitle.value ?? 'Vaadin Chat');
 
     effect(() => {
         document.title = currentTitle.value;
     });
 
     const {state, logout} = useAuth();
+    // TODO https://github.com/vaadin/web-components/issues/6468 - Navigating by clicking on items in the SideNav will cause a page reload
     return (
         <AppLayout primarySection="drawer">
             <span className={"items-center flex text-l font-semibold h-xl px-m"} slot={"drawer"}>Vaadin Chat</span>
