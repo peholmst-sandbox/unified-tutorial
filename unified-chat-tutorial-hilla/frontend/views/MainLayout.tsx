@@ -13,15 +13,15 @@ import {Tooltip} from "@hilla/react-components/Tooltip";
 import {computed, effect, signal} from "@preact/signals-react";
 
 export const pageTitle = signal<string | undefined>(undefined);
+const currentTitle = computed(() => pageTitle.value ?? 'Vaadin Chat');
+
+effect(() => {
+    document.title = currentTitle.value;
+});
 
 export default function MainLayout() {
-    const currentTitle = computed(() => pageTitle.value ?? 'Vaadin Chat');
-
-    effect(() => {
-        document.title = currentTitle.value;
-    });
-
     const {state, logout} = useAuth();
+
     // TODO https://github.com/vaadin/web-components/issues/6468 - Navigating by clicking on items in the SideNav will cause a page reload
     return (
         <AppLayout primarySection="drawer">
