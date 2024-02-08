@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity(jsr250Enabled = true)
 @Configuration
 class SecurityConfig extends VaadinWebSecurity {
 
@@ -27,19 +27,19 @@ class SecurityConfig extends VaadinWebSecurity {
                 .username("alice")
                 // password = password with this hash, don't tell anybody :-)
                 .password("{bcrypt}$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmNSJZ.0FxO/BTk76klW")
-                .roles("USER")
+                .roles(Roles.USER)
                 .build();
         var bob = User.builder()
                 .username("bob")
                 // password = password with this hash, don't tell anybody :-)
                 .password("{bcrypt}$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmNSJZ.0FxO/BTk76klW")
-                .roles("USER")
+                .roles(Roles.USER)
                 .build();
         var admin = User.builder()
                 .username("admin")
                 // password = password with this hash, don't tell anybody :-)
                 .password("{bcrypt}$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmNSJZ.0FxO/BTk76klW")
-                .roles("ADMIN", "USER")
+                .roles(Roles.ADMIN, Roles.USER)
                 .build();
         return new InMemoryUserDetailsManager(alice, bob, admin);
     }
