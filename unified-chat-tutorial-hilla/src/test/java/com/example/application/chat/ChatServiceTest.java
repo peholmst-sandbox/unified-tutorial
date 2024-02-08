@@ -1,4 +1,4 @@
-package com.example.application.chat.service;
+package com.example.application.chat;
 
 import com.example.application.security.Roles;
 import jakarta.annotation.PostConstruct;

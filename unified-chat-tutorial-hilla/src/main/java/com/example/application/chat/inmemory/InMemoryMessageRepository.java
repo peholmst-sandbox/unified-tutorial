@@ -1,7 +1,7 @@
-package com.example.application.chat.inmemoryrepo;
+package com.example.application.chat.inmemory;
 
-import com.example.application.chat.service.Message;
-import com.example.application.chat.service.MessageRepository;
+import com.example.application.chat.Message;
+import com.example.application.chat.MessageRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.*;

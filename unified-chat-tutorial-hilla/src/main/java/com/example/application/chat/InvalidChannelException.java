@@ -1,4 +1,4 @@
-package com.example.application.chat.service;
+package com.example.application.chat;
 
 public class InvalidChannelException extends IllegalArgumentException {
 

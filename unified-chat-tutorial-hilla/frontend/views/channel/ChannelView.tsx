@@ -8,11 +8,11 @@ import {Subscription} from "@hilla/frontend";
 import {useAuth} from "Frontend/util/auth";
 import {pageTitle} from "Frontend/views/MainLayout";
 import {useSignal} from "@preact/signals-react";
-import Message from "Frontend/generated/com/example/application/chat/service/Message";
+import Message from "Frontend/generated/com/example/application/chat/Message";
 import {connectionActive} from "Frontend/util/workarounds";
 import {Notification} from "@hilla/react-components/Notification";
 import {Button} from "@hilla/react-components/Button";
-import Channel from "Frontend/generated/com/example/application/chat/service/Channel";
+import Channel from "Frontend/generated/com/example/application/chat/Channel";
 
 const HISTORY_SIZE = 20; // A small number to demonstrate the feature
 

@@ -12,7 +12,7 @@ import {Link} from "react-router-dom";
 import {pageTitle} from "Frontend/views/MainLayout";
 import {signal, useSignal} from "@preact/signals-react";
 import {useEffect} from "react";
-import Channel from "Frontend/generated/com/example/application/chat/service/Channel";
+import Channel from "Frontend/generated/com/example/application/chat/Channel";
 
 const channels = signal<Channel[]>([]);
 
