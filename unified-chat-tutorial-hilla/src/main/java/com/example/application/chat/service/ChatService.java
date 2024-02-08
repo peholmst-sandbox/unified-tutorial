@@ -1,6 +1,5 @@
 package com.example.application.chat.service;
 
-import com.example.application.annotation.API;
 import com.example.application.security.Roles;
 import dev.hilla.BrowserCallable;
 import jakarta.annotation.security.RolesAllowed;
@@ -17,7 +16,6 @@ import java.util.Optional;
 
 @BrowserCallable
 @RolesAllowed(Roles.USER)
-@API
 public class ChatService {
 
     private static final Logger log = LoggerFactory.getLogger(ChatService.class);

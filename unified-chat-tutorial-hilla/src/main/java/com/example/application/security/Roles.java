@@ -1,9 +1,7 @@
 package com.example.application.security;
 
-import com.example.application.annotation.API;
 import org.springframework.security.core.GrantedAuthority;
 
-@API
 public final class Roles {
 
     private Roles() {

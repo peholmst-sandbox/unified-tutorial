@@ -1,6 +1,5 @@
 package com.example.application.security;
 
-import com.example.application.annotation.API;
 import dev.hilla.BrowserCallable;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -10,7 +9,6 @@ import java.util.Optional;
 
 @BrowserCallable
 @PermitAll
-@API
 public class CurrentUser {
 
     public Optional<User> get() {
