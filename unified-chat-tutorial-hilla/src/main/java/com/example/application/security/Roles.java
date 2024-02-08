@@ -1,7 +1,9 @@
 package com.example.application.security;
 
+import com.example.application.annotation.API;
 import org.springframework.security.core.GrantedAuthority;
 
+@API
 public final class Roles {
 
     private Roles() {
@@ -10,11 +12,11 @@ public final class Roles {
     public static final String USER = "USER";
     public static final String ADMIN = "ADMIN";
 
-    public boolean isRole(GrantedAuthority authority) {
+    static boolean isRole(GrantedAuthority authority) {
         return authority.getAuthority().startsWith("ROLE_");
     }
 
-    public String toRoleName(GrantedAuthority authority) {
+    static String toRoleName(GrantedAuthority authority) {
         return authority.getAuthority().substring(5);
     }
 }
