@@ -2,6 +2,7 @@ package com.example.application.chat;
 
 import com.example.application.security.Roles;
 import jakarta.annotation.PostConstruct;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,6 +33,7 @@ public class ChatServiceTest {
     }
 
     @Test
+    @DisplayName("All public methods require authentication")
     public void all_methods_require_authentication() {
         assertThatThrownBy(() -> chatService.channels()).isInstanceOf(AuthenticationException.class);
         assertThatThrownBy(() -> chatService.createChannel("won't work")).isInstanceOf(AuthenticationException.class);
@@ -43,6 +45,7 @@ public class ChatServiceTest {
 
     @Test
     @WithMockUser(roles = {})
+    @DisplayName("All public methods require a role even if the user is authenticated")
     public void all_methods_require_a_role() {
         assertThatThrownBy(() -> chatService.channels()).isInstanceOf(AccessDeniedException.class);
         assertThatThrownBy(() -> chatService.createChannel("won't work")).isInstanceOf(AccessDeniedException.class);
@@ -54,6 +57,7 @@ public class ChatServiceTest {
 
     @Test
     @WithMockUser(roles = Roles.USER)
+    @DisplayName("Users can retrieve channels")
     public void users_can_retrieve_channels() {
         assertThat(chatService.channels()).isNotEmpty();
         assertThat(chatService.channel(knownChannelId)).isPresent();
@@ -61,6 +65,7 @@ public class ChatServiceTest {
 
     @Test
     @WithMockUser(roles = {Roles.USER, Roles.ADMIN})
+    @DisplayName("Admins can create channels")
     public void admins_can_create_channels() {
         var channel = chatService.createChannel("My channel");
         assertThat(chatService.channel(channel.id())).contains(channel);
@@ -68,7 +73,15 @@ public class ChatServiceTest {
     }
 
     @Test
+    @WithMockUser(roles = Roles.USER)
+    @DisplayName("Users cannot create channels")
+    public void users_cannot_create_channels() {
+        assertThatThrownBy(() -> chatService.createChannel("won't work")).isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
     @WithMockUser(username = "joecool", roles = Roles.USER)
+    @DisplayName("Users can post and receive messages")
     public void users_can_post_and_receive_messages() {
         var liveMessages = chatService.liveMessages(knownChannelId);
         var verifier = StepVerifier
@@ -90,6 +103,7 @@ public class ChatServiceTest {
 
     @Test
     @WithMockUser(roles = Roles.USER)
+    @DisplayName("Simultaneously posted messages are grouped together to save bandwidth")
     public void simultaneously_posted_messages_are_grouped_together_to_save_bandwidth() {
         var liveMessages = chatService.liveMessages(knownChannelId);
         var verifier = StepVerifier
@@ -104,6 +118,7 @@ public class ChatServiceTest {
 
     @Test
     @WithMockUser(roles = Roles.USER)
+    @DisplayName("Users can fetch message history")
     public void users_can_fetch_message_history() {
         chatService.postMessage(knownChannelId, "message1");
         chatService.postMessage(knownChannelId, "message2");
@@ -120,18 +135,21 @@ public class ChatServiceTest {
 
     @Test
     @WithMockUser(roles = Roles.USER)
+    @DisplayName("Posting to a nonexistent channel throws an exception")
     public void posting_to_nonexistent_channel_throws_exception() {
         assertThatThrownBy(() -> chatService.postMessage("nonexistent", "will never get published")).isInstanceOf(InvalidChannelException.class);
     }
 
     @Test
     @WithMockUser(roles = Roles.USER)
+    @DisplayName("Listening to a nonexistent channel throws an exception")
     public void listening_to_nonexistent_channel_throws_exception() {
         assertThatThrownBy(() -> chatService.liveMessages("nonexistent")).isInstanceOf(InvalidChannelException.class);
     }
 
     @Test
     @WithMockUser(roles = Roles.USER)
+    @DisplayName("Fetching the message history of a nonexistent channel returns an empty list")
     public void fetching_message_history_of_nonexistent_channel_returns_empty_list() {
         assertThat(chatService.messageHistory("nonexistent", 1)).isEmpty();
     }
