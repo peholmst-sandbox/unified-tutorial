@@ -33,7 +33,8 @@ function AddChannelComponent() {
                     theme: "success",
                     position: "bottom-end"
                 });
-            } catch (error) {
+            } catch (err) {
+                console.error("Error creating channel", err);
                 Notification.show("Failed to create channel. Please try again later.", {
                     theme: "error",
                     position: "bottom-end"
@@ -84,7 +85,8 @@ export default function LobbyView() {
         (async () => {
             try {
                 channels.value = await ChatService.channels();
-            } catch (error) {
+            } catch (err) {
+                console.error("Error loading channels", err);
                 Notification.show("Failed to load channels. Please try again later.", {
                     theme: "error",
                     position: "middle"
