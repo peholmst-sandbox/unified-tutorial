@@ -1,0 +1,8 @@
+.channel-view vaadin-message {
+    margin: var(--lumo-space-s);
+    border-radius: var(--lumo-border-radius-m);
+}
+
+.channel-view vaadin-message[theme~="current-user"] {
+    background-color: var(--lumo-contrast-5pct);
+}

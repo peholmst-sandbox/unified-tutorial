@@ -11,68 +11,82 @@ import {useSignal} from "@preact/signals-react";
 import Message from "Frontend/generated/com/example/application/chat/Message";
 import {connectionActive} from "Frontend/util/workarounds";
 import {Notification} from "@hilla/react-components/Notification";
-import {Button} from "@hilla/react-components/Button";
 import Channel from "Frontend/generated/com/example/application/chat/Channel";
 
-const HISTORY_SIZE = 20; // A small number to demonstrate the feature
+import './ChannelView.css';
+import {hashCode} from "Frontend/util/util";
+import {Button} from "@hilla/react-components/Button";
 
-type ActiveSubscription<T> = { state: "active", subscription: Subscription<T> };
-type InactiveSubscription = { state: "inactive" };
-type PendingSubscription = { state: "pending" };
-type SubscriptionState<T> = ActiveSubscription<T> | InactiveSubscription | PendingSubscription;
+const HISTORY_SIZE = 20; // A small number to demonstrate the feature
 
 export default function ChannelView() {
     const currentUserName = useAuth().state.user?.name;
     const navigate = useNavigate();
     const params = useParams();
     const channel = useSignal<Channel | undefined>(undefined);
-    const subscription = useSignal<SubscriptionState<Message[]>>({state: "pending"});
+    const subscription = useSignal<Subscription<Message[]> | undefined>(undefined);
     const messages = useSignal<Message[]>([]);
+    const error = useSignal(false);
 
-    const connect = () => {
-        disconnect();
+    function connect() {
         (async () => {
             if (!channel.value) {
                 return;
             }
-            messages.value = await ChatService.messageHistory(channel.value.id, HISTORY_SIZE);
+            disconnect();
+            error.value = false;
+            try {
+                messages.value = await ChatService.messageHistory(channel.value.id, HISTORY_SIZE);
+            } catch (err) {
+                console.error("Error fetching message history", err);
+                error.value = true;
+            }
             // There is a risk of missing messages that arrive after fetching the message history,
             // but before subscribing to the channel. Dealing with this situation is outside the scope of this tutorial.
-            subscription.value = {
-                state: "active",
-                subscription: ChatService.liveMessages(channel.value.id).onNext(receiveMessages).onError(disconnect)
-            };
+            subscription.value = ChatService.liveMessages(channel.value.id)
+                .onNext(receiveMessages)
+                .onError(() => {
+                    console.error("Error in message subscription");
+                    error.value = true;
+                });
         })();
-    };
+    }
 
-    const receiveMessages = (incoming: Message[]) => {
+    function receiveMessages(incoming: Message[]) {
         const newMessages = [...messages.value, ...incoming];
         if (newMessages.length > HISTORY_SIZE) {
             newMessages.splice(0, newMessages.length - HISTORY_SIZE);
         }
         messages.value = newMessages;
-    };
 
-    const sendMessage = async (message: string) => {
+        const messagesSentByOthers = incoming.filter(m => m.author !== currentUserName);
+        if (messagesSentByOthers.length == 1) {
+            Notification.show(`Received message from ${messagesSentByOthers[0].author}`);
+        } else if (messagesSentByOthers.length > 1) {
+            Notification.show(`Received ${messagesSentByOthers.length} messages`);
+        }
+    }
+
+    async function sendMessage(message: string) {
         if (!channel.value) {
             return;
         }
         try {
             await ChatService.postMessage(channel.value.id, message);
-        } catch (error) {
+        } catch (_) {
             Notification.show("Failed to send the message. Please try again later.", {
                 theme: "error",
                 position: "bottom-end"
             });
         }
-    };
+    }
 
-    const disconnect = () => {
-        if (subscription.value.state === "active") {
-            subscription.value.subscription.cancel();
-            subscription.value = {state: "inactive"};
+    function disconnect() {
+        if (subscription.value) {
+            subscription.value.cancel();
+            subscription.value = undefined;
         }
-    };
+    }
 
     useEffect(() => {
         (async () => {
@@ -90,21 +104,24 @@ export default function ChannelView() {
             connect();
         } else {
             disconnect();
+            console.error("Connection to server lost");
+            error.value = true;
         }
         return disconnect;
-    }, [channel.value, connectionActive.value]);
+    }, [channel.value, connectionActive.value]); // TODO There should be a framework-provided way of checking the state of a subscription and re-subscribing when the connection is lost
 
     return (
-        <VerticalLayout theme={"padding spacing"} className={"w-full h-full"}>
+        <VerticalLayout theme={"padding spacing"} className={"w-full h-full channel-view"}>
             <MessageList className={"w-full h-full border"} items={messages.value.map(message => ({
                 text: message.message,
                 userName: message.author,
                 time: message.timestamp,
                 theme: message.author === currentUserName ? "current-user" : undefined,
+                userColorIndex: Math.abs(hashCode(message.author) % 7)
             }))}/>
-            <MessageInput className={"w-full"} onSubmit={e => sendMessage(e.detail.value)}/>
-            <Notification opened={subscription.value.state === "inactive"} theme={"error"} duration={0}>
-                <span>The connection to the chat service is currently down. If the problem persists, try reloading the page.</span>
+            <MessageInput className={"w-full p-0"} onSubmit={e => sendMessage(e.detail.value)}/>
+            <Notification opened={error.value} theme={"error"} duration={0}>
+                <span>There is a problem with the chat. Please reload the page.</span>
                 <Button onClick={_ => window.location.reload()}>Reload</Button>
             </Notification>
         </VerticalLayout>

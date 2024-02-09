@@ -14,6 +14,7 @@ import {VirtualList} from "@hilla/react-components/VirtualList";
 import {Avatar} from "@hilla/react-components/Avatar";
 
 import './LobbyView.css';
+import {hashCode} from "Frontend/util/util";
 
 const channels = signal<Channel[]>([]);
 
@@ -51,14 +52,6 @@ function AddChannelComponent() {
     </HorizontalLayout>
 }
 
-function hashCode(s: string): number {
-    let hash = 0;
-    for (let i = 0; i < s.length; i++) {
-        hash = s.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return hash;
-}
-
 function truncateMessage(msg: string) {
     if (msg.length > 50) {
         return msg.substring(0, 50) + "...";
@@ -67,7 +60,7 @@ function truncateMessage(msg: string) {
 }
 
 function ChannelComponent({channel}: { channel: Channel }) {
-    const colorIndex = Math.abs(hashCode(channel.id) % 6);
+    const colorIndex = Math.abs(hashCode(channel.id) % 7);
     return (<div className={"flex gap-m p-m rounded-m channel"} key={"channel-" + channel.id}>
         <Avatar name={channel.name} theme={"small"} colorIndex={colorIndex}/>
         <div className={"flex-auto flex flex-col leading-xs gap-xs"}>
