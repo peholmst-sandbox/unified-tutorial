@@ -14,7 +14,7 @@ import {Notification} from "@hilla/react-components/Notification";
 import Channel from "Frontend/generated/com/example/application/chat/Channel";
 
 import './ChannelView.css';
-import {hashCode} from "Frontend/util/util";
+import {formatPastDate, hashCode} from "Frontend/util/util";
 import {Button} from "@hilla/react-components/Button";
 
 const HISTORY_SIZE = 20; // A small number to demonstrate the feature
@@ -115,7 +115,7 @@ export default function ChannelView() {
             <MessageList className={"w-full h-full border"} items={messages.value.map(message => ({
                 text: message.message,
                 userName: message.author,
-                time: message.timestamp,
+                time: formatPastDate(new Date(message.timestamp)),
                 theme: message.author === currentUserName ? "current-user" : undefined,
                 userColorIndex: Math.abs(hashCode(message.author) % 7)
             }))}/>

@@ -14,7 +14,7 @@ import {VirtualList} from "@hilla/react-components/VirtualList";
 import {Avatar} from "@hilla/react-components/Avatar";
 
 import './LobbyView.css';
-import {hashCode} from "Frontend/util/util";
+import {formatPastDate, hashCode} from "Frontend/util/util";
 
 const channels = signal<Channel[]>([]);
 
@@ -65,9 +65,10 @@ function ChannelComponent({channel}: { channel: Channel }) {
     return (<div className={"flex gap-m p-m rounded-m channel"} key={"channel-" + channel.id}>
         <Avatar name={channel.name} theme={"small"} colorIndex={colorIndex}/>
         <div className={"flex-auto flex flex-col leading-xs gap-xs"}>
-            <div className={"flex items-baseline justify-between"}>
+            <div className={"flex items-baseline justify-start gap-s"}>
                 <Link to={"channel/" + channel.id} className={"text-m font-bold text-body"}>{channel.name}</Link>
-                {channel.lastMessage && <div className={"text-s text-secondary"}>{channel.lastMessage.timestamp}</div>}
+                {channel.lastMessage && <div
+                    className={"text-s text-secondary"}>{formatPastDate(new Date(channel.lastMessage.timestamp))}</div>}
             </div>
             {channel.lastMessage && <div className={"text-s text-secondary"}><span
                 className={"font-bold"}>{channel.lastMessage.author}</span>: {truncateMessage(channel.lastMessage.message)}
