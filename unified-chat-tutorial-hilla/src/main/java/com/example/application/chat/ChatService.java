@@ -29,8 +29,36 @@ public class ChatService {
         this.channelRepository = channelRepository;
         this.messageRepository = messageRepository;
         this.clock = clock;
+        generateTestData();
     }
 
+    private void generateTestData() {
+        String[] chatChannels = {
+                "TechTalks Central",
+                "Mindful Mornings",
+                "Global Gourmet Guild",
+                "Fitness Frontiers",
+                "Bookworm Bungalow",
+                "Creative Corner",
+                "Eco Enthusiasts",
+                "History Huddle",
+                "Music Mavens",
+                "Travel Trekkers",
+                "Gamer's Grind",
+                "Pet Parade",
+                "Fashion Forward",
+                "Science Sphere",
+                "Artists' Alley",
+                "Movie Maniacs",
+                "Entrepreneur Exchange",
+                "Health Hub",
+                "DIY Den",
+                "Language Labyrinth"
+        };
+        for (String channel : chatChannels) {
+            createChannel(channel);
+        }
+    }
     public List<Channel> channels() {
         return channelRepository.findAll();
     }
