@@ -28,42 +28,46 @@ export default function ChannelView() {
     const messages = useSignal<Message[]>([]);
     const error = useSignal(false);
 
-    function connect() {
+    function subscribe() {
         (async () => {
             if (!channel.value) {
                 return;
             }
-            disconnect();
+            unsubscribe();
             error.value = false;
+            console.log("Subscribing to channel", channel.value.id);
+            subscription.value = ChatService.liveMessages(channel.value.id)
+                .onNext(incoming => receiveMessages(incoming, true))
+                .onError(() => {
+                    console.error("Error in message subscription", subscription);
+                    error.value = true;
+                });
             try {
-                messages.value = await ChatService.messageHistory(channel.value.id, HISTORY_SIZE);
+                const lastSeenMessageId = messages.value.length == 0 ? undefined : messages.value[messages.value.length - 1].messageId;
+                console.log("Fetching messages sent after", lastSeenMessageId);
+                receiveMessages(await ChatService.messageHistory(channel.value.id, HISTORY_SIZE, lastSeenMessageId));
             } catch (err) {
                 console.error("Error fetching message history", err);
                 error.value = true;
             }
-            // There is a risk of missing messages that arrive after fetching the message history,
-            // but before subscribing to the channel. Dealing with this situation is outside the scope of this tutorial.
-            subscription.value = ChatService.liveMessages(channel.value.id)
-                .onNext(receiveMessages)
-                .onError(() => {
-                    console.error("Error in message subscription");
-                    error.value = true;
-                });
         })();
     }
 
-    function receiveMessages(incoming: Message[]) {
-        const newMessages = [...messages.value, ...incoming];
+    function receiveMessages(incoming: Message[], notify: boolean = false) {
+        console.log("Received messages", incoming);
+        const newMessages = [...messages.value, ...incoming].sort((a, b) => a.sequenceNumber - b.sequenceNumber);
         if (newMessages.length > HISTORY_SIZE) {
             newMessages.splice(0, newMessages.length - HISTORY_SIZE);
         }
         messages.value = newMessages;
 
-        const messagesSentByOthers = incoming.filter(m => m.author !== currentUserName);
-        if (messagesSentByOthers.length == 1) {
-            Notification.show(`Received message from ${messagesSentByOthers[0].author}`);
-        } else if (messagesSentByOthers.length > 1) {
-            Notification.show(`Received ${messagesSentByOthers.length} messages`);
+        if (notify) {
+            const messagesSentByOthers = incoming.filter(m => m.author !== currentUserName);
+            if (messagesSentByOthers.length == 1) {
+                Notification.show(`Received message from ${messagesSentByOthers[0].author}`);
+            } else if (messagesSentByOthers.length > 1) {
+                Notification.show(`Received ${messagesSentByOthers.length} messages`);
+            }
         }
     }
 
@@ -81,33 +85,36 @@ export default function ChannelView() {
         }
     }
 
-    function disconnect() {
+    function unsubscribe() {
         if (subscription.value) {
+            console.log("Unsubscribing from channel", subscription);
             subscription.value.cancel();
             subscription.value = undefined;
         }
     }
 
+    async function updateChannel() {
+        channel.value = params.channelId ? await ChatService.channel(params.channelId) : undefined;
+        if (!channel.value) {
+            navigate("/");
+        } else {
+            pageTitle.value = channel.value.name;
+        }
+    }
+
     useEffect(() => {
-        (async () => {
-            channel.value = params.channelId ? await ChatService.channel(params.channelId) : undefined;
-            if (!channel.value) {
-                navigate("/");
-            } else {
-                pageTitle.value = channel.value.name;
-            }
-        })();
+        updateChannel().catch(console.error);
     }, [params.channelId]);
 
     useEffect(() => {
         if (connectionActive.value) {
-            connect();
+            subscribe();
         } else {
-            disconnect();
+            unsubscribe();
             console.error("Connection to server lost");
             error.value = true;
         }
-        return disconnect;
+        return unsubscribe;
     }, [channel.value, connectionActive.value]); // TODO There should be a framework-provided way of checking the state of a subscription and re-subscribing when the connection is lost
 
     return (
