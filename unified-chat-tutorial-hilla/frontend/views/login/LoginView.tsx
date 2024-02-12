@@ -1,16 +1,20 @@
-import {useAuth} from 'Frontend/util/auth.js';
-import {useNavigate} from 'react-router-dom';
+import {useAuth} from "Frontend/util/auth.js";
+import {useNavigate} from "react-router-dom";
 import {LoginForm} from "@hilla/react-components/LoginForm";
 import {signal} from "@preact/signals-react";
+import {useEffect} from "react";
 
 export default function LoginView() {
     const {login} = useAuth();
     const hasError = signal(false);
     const navigate = useNavigate();
-    document.title = "Login";
+
+    useEffect(() => {
+        document.title = "Login";
+    }, []);
 
     return (
-        <div className={"flex flex-col h-full w-full items-center justify-center gap-m"}>
+        <div className="flex flex-col h-full w-full items-center justify-center gap-m">
             <h1>Vaadin Chat</h1>
             <div>You can log in as 'alice', 'bob' or 'admin'. The password for all of them is 'password'.</div>
             <LoginForm error={hasError.value} onLogin={async ({detail: {username, password}}) => {
@@ -18,7 +22,7 @@ export default function LoginView() {
                 if (error) {
                     hasError.value = true;
                 } else {
-                    const url = redirectUrl ?? defaultUrl ?? '/';
+                    const url = redirectUrl ?? defaultUrl ?? "/";
                     const path = new URL(url, document.baseURI).pathname;
                     navigate(path);
                 }
