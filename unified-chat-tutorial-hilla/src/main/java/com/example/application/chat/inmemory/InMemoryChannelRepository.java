@@ -3,6 +3,7 @@ package com.example.application.chat.inmemory;
 import com.example.application.chat.Channel;
 import com.example.application.chat.ChannelRepository;
 import com.example.application.chat.MessageRepository;
+import com.example.application.chat.NewChannel;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
@@ -23,11 +24,6 @@ class InMemoryChannelRepository implements ChannelRepository {
     }
 
     @Override
-    public String generateId() {
-        return UUID.randomUUID().toString();
-    }
-
-    @Override
     public List<Channel> findAll() {
         return channels.values().stream()
                 .sorted(Comparator.comparing(Channel::name))
@@ -43,8 +39,10 @@ class InMemoryChannelRepository implements ChannelRepository {
     }
 
     @Override
-    public void save(Channel channel) {
+    public Channel save(NewChannel newChannel) {
+        var channel = new Channel(UUID.randomUUID().toString(), newChannel.name());
         channels.put(channel.id(), channel);
+        return channel;
     }
 
     @Override

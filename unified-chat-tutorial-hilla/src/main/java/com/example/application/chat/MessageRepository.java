@@ -1,11 +1,15 @@
 package com.example.application.chat;
 
+import jakarta.annotation.Nullable;
+
 import java.util.List;
 
 public interface MessageRepository {
-    String generateId(String channelId);
+    List<Message> findLatest(String channelId, int fetchMax, @Nullable String lastSeenMessageId);
 
-    List<Message> findLatest(String channelId, int fetchMax);
+    default List<Message> findLatest(String channelId, int fetchMax) {
+        return findLatest(channelId, fetchMax, null);
+    }
 
-    void save(Message message);
+    Message save(NewMessage newMessage);
 }

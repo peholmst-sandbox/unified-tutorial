@@ -2,6 +2,7 @@ package com.example.application.chat;
 
 import com.example.application.security.Roles;
 import dev.hilla.BrowserCallable;
+import jakarta.annotation.Nullable;
 import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +66,7 @@ public class ChatService {
 
     @RolesAllowed(Roles.ADMIN)
     public Channel createChannel(String name) {
-        var channel = new Channel(channelRepository.generateId(), name, null);
-        channelRepository.save(channel);
-        return channel;
+        return channelRepository.save(new NewChannel(name));
     }
 
     public Optional<Channel> channel(String channelId) {
@@ -81,8 +80,8 @@ public class ChatService {
         return sink.asFlux().filter(m -> m.channelId().equals(channelId)).buffer(BUFFER_DURATION);
     }
 
-    public List<Message> messageHistory(String channelId, int fetchMax) {
-        return messageRepository.findLatest(channelId, fetchMax);
+    public List<Message> messageHistory(String channelId, int fetchMax, @Nullable String lastSeenMessageId) {
+        return messageRepository.findLatest(channelId, fetchMax, lastSeenMessageId);
     }
 
     public void postMessage(String channelId, String message) throws InvalidChannelException {
@@ -90,8 +89,7 @@ public class ChatService {
             throw new InvalidChannelException();
         }
         var author = SecurityContextHolder.getContext().getAuthentication().getName();
-        var msg = new Message(messageRepository.generateId(channelId), channelId, clock.instant(), author, message);
-        messageRepository.save(msg);
+        var msg = messageRepository.save(new NewMessage(channelId, clock.instant(), author, message));
         var result = sink.tryEmitNext(msg);
         if (result.isFailure()) {
             log.error("Error posting message to channel {}: {}", channelId, result);

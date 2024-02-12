@@ -1,9 +1,6 @@
 package com.example.application.chat.inmemory;
 
-import com.example.application.chat.Channel;
-import com.example.application.chat.ChannelRepository;
-import com.example.application.chat.Message;
-import com.example.application.chat.MessageRepository;
+import com.example.application.chat.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -26,29 +23,16 @@ public class InMemoryChannelRepositoryTest {
     }
 
     @Test
-    void repository_generates_unique_ids() {
-        var id1 = repo.generateId();
-        var id2 = repo.generateId();
-        var id3 = repo.generateId();
-        var id4 = repo.generateId();
-
-        assertThat(List.of(id1, id2, id3, id4)).doesNotHaveDuplicates();
-    }
-
-    @Test
     void repository_is_empty_at_first() {
         assertThat(repo.findAll()).isEmpty();
-        assertThat(repo.exists(repo.generateId())).isFalse();
-        assertThat(repo.findById(repo.generateId())).isEmpty();
+        assertThat(repo.exists("nonexistent")).isFalse();
+        assertThat(repo.findById("nonexitent")).isEmpty();
     }
 
     @Test
     void repository_can_save_and_retrieve_channels() {
-        var channel1 = new Channel(repo.generateId(), "channel1");
-        var channel2 = new Channel(repo.generateId(), "channel2");
-
-        repo.save(channel1);
-        repo.save(channel2);
+        var channel1 = repo.save(new NewChannel("channel1"));
+        var channel2 = repo.save(new NewChannel("channel2"));
 
         assertThat(repo.findAll()).containsExactly(channel1, channel2);
         assertThat(repo.exists(channel1.id())).isTrue();
@@ -59,20 +43,16 @@ public class InMemoryChannelRepositoryTest {
 
     @Test
     void channels_are_sorted_by_name() {
-        var channel1 = new Channel(repo.generateId(), "channel1");
-        var channel2 = new Channel(repo.generateId(), "channel2");
-
-        repo.save(channel2);
-        repo.save(channel1);
+        var channel1 = repo.save(new NewChannel("channel1"));
+        var channel2 = repo.save(new NewChannel("channel2"));
 
         assertThat(repo.findAll()).containsExactly(channel1, channel2);
     }
 
     @Test
     void latest_message_is_included_when_retrieving_channels() {
-        var channel1 = new Channel(repo.generateId(), "channel1", null);
-        var message = new Message("messageId", channel1.id(), Instant.now(), "user", "message");
-        repo.save(channel1);
+        var channel1 = repo.save(new NewChannel("channel1"));
+        var message = new Message("messageId", channel1.id(), 1L, Instant.now(), "user", "message");
         when(messageRepoMock.findLatest(channel1.id(), 1)).thenReturn(List.of(message));
         assertThat(repo.findById(channel1.id())).contains(new Channel(channel1.id(), channel1.name(), message));
     }

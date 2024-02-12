@@ -28,8 +28,7 @@ public class ChatServiceTest {
 
     @PostConstruct
     public void setUpAll() {
-        knownChannelId = channelRepository.generateId();
-        channelRepository.save(new Channel(knownChannelId, "General"));
+        knownChannelId = channelRepository.save(new NewChannel("General")).id();
     }
 
     @Test
@@ -39,7 +38,7 @@ public class ChatServiceTest {
         assertThatThrownBy(() -> chatService.createChannel("won't work")).isInstanceOf(AuthenticationException.class);
         assertThatThrownBy(() -> chatService.channel("won't work")).isInstanceOf(AuthenticationException.class);
         assertThatThrownBy(() -> chatService.liveMessages("won't work")).isInstanceOf(AuthenticationException.class);
-        assertThatThrownBy(() -> chatService.messageHistory("won't work", 1)).isInstanceOf(AuthenticationException.class);
+        assertThatThrownBy(() -> chatService.messageHistory("won't work", 1, null)).isInstanceOf(AuthenticationException.class);
         assertThatThrownBy(() -> chatService.postMessage("won't work", "will never get published")).isInstanceOf(AuthenticationException.class);
     }
 
@@ -51,7 +50,7 @@ public class ChatServiceTest {
         assertThatThrownBy(() -> chatService.createChannel("won't work")).isInstanceOf(AccessDeniedException.class);
         assertThatThrownBy(() -> chatService.channel("won't work")).isInstanceOf(AccessDeniedException.class);
         assertThatThrownBy(() -> chatService.liveMessages("won't work")).isInstanceOf(AccessDeniedException.class);
-        assertThatThrownBy(() -> chatService.messageHistory("won't work", 1)).isInstanceOf(AccessDeniedException.class);
+        assertThatThrownBy(() -> chatService.messageHistory("won't work", 1, null)).isInstanceOf(AccessDeniedException.class);
         assertThatThrownBy(() -> chatService.postMessage("won't work", "will never get published")).isInstanceOf(AccessDeniedException.class);
     }
 
@@ -126,7 +125,7 @@ public class ChatServiceTest {
         chatService.postMessage(knownChannelId, "message4");
         chatService.postMessage(knownChannelId, "message5");
         chatService.postMessage(knownChannelId, "message6");
-        assertThat(chatService.messageHistory(knownChannelId, 5)).satisfies(messages -> {
+        assertThat(chatService.messageHistory(knownChannelId, 5, null)).satisfies(messages -> {
             assertThat(messages).hasSize(5);
             assertThat(messages.getFirst().message()).isEqualTo("message2");
             assertThat(messages.getLast().message()).isEqualTo("message6");
@@ -151,6 +150,6 @@ public class ChatServiceTest {
     @WithMockUser(roles = Roles.USER)
     @DisplayName("Fetching the message history of a nonexistent channel returns an empty list")
     public void fetching_message_history_of_nonexistent_channel_returns_empty_list() {
-        assertThat(chatService.messageHistory("nonexistent", 1)).isEmpty();
+        assertThat(chatService.messageHistory("nonexistent", 1, null)).isEmpty();
     }
 }

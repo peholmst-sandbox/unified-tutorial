@@ -5,11 +5,9 @@ import java.util.Optional;
 
 public interface ChannelRepository {
 
-    String generateId();
-
     List<Channel> findAll();
 
-    void save(Channel channel);
+    Channel save(NewChannel newChannel);
 
     Optional<Channel> findById(String channelId);
 
