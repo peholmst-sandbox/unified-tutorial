@@ -83,6 +83,7 @@ export default function LobbyView() {
     const isAdmin = hasAccess({rolesAllowed: ["ADMIN"]});
 
     useEffect(() => {
+        pageTitle.value = "Channels";
         (async () => {
             try {
                 channels.value = await ChatService.channels();
@@ -96,8 +97,6 @@ export default function LobbyView() {
             }
         })();
     }, []);
-
-    pageTitle.value = "Channels";
 
     return (<VerticalLayout theme={"spacing padding"} className={"lobby-view h-full w-full"}>
         <VirtualList items={channels.value} className={"flex-grow border p-s"}>
