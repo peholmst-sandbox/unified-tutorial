@@ -1,7 +1,5 @@
 import {ChatService} from "Frontend/generated/endpoints";
-import {VerticalLayout} from "@hilla/react-components/VerticalLayout";
 import {useAuth} from "Frontend/util/auth";
-import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
 import {TextField} from "@hilla/react-components/TextField";
 import {Button} from "@hilla/react-components/Button";
 import {Notification} from "@hilla/react-components/Notification";
@@ -46,11 +44,11 @@ function AddChannelComponent() {
     };
 
     // TODO Assign ENTER as shortcut key to button
-    return <HorizontalLayout theme={"spacing"} className={"w-full"}>
-        <TextField placeholder={"New channel name"} className={"flex-grow"} value={name.value}
+    return <div className="w-full flex flex-row gap-s">
+        <TextField placeholder="New channel name" className="flex-grow" value={name.value}
                    onChange={e => name.value = e.target.value}/>
-        <Button theme={"primary"} onClick={addChannel} disabled={buttonDisabled.value}>Add channel</Button>
-    </HorizontalLayout>
+        <Button theme="primary" onClick={addChannel} disabled={buttonDisabled.value}>Add channel</Button>
+    </div>
 }
 
 function truncateMessage(msg: string) {
@@ -62,20 +60,21 @@ function truncateMessage(msg: string) {
 
 function ChannelComponent({channel}: { channel: Channel }) {
     const colorIndex = Math.abs(hashCode(channel.id) % 7);
-    return (<div className={"flex gap-m p-m rounded-m channel"} key={"channel-" + channel.id}>
-        <Avatar name={channel.name} theme={"small"} colorIndex={colorIndex}/>
-        <div className={"flex-auto flex flex-col leading-xs gap-xs"}>
-            <div className={"flex items-baseline justify-start gap-s"}>
-                <Link to={"channel/" + channel.id} className={"text-m font-bold text-body"}>{channel.name}</Link>
-                {channel.lastMessage && <div
-                    className={"text-s text-secondary"}>{formatPastDate(new Date(channel.lastMessage.timestamp))}</div>}
+    return <div className="flex gap-m p-m rounded-m channel" key={"channel-" + channel.id}>
+        <Avatar name={channel.name} theme="small" colorIndex={colorIndex}/>
+        <div className="flex-auto flex flex-col leading-xs gap-xs">
+            <div className="flex items-baseline justify-start gap-s">
+                <Link to={"channel/" + channel.id} className="text-m font-bold text-body">{channel.name}</Link>
+                {channel.lastMessage && <div className="text-s text-secondary">
+                    {formatPastDate(new Date(channel.lastMessage.timestamp))}
+                </div>}
             </div>
-            {channel.lastMessage && <div className={"text-s text-secondary"}><span
-                className={"font-bold"}>{channel.lastMessage.author}</span>: {truncateMessage(channel.lastMessage.message)}
+            {channel.lastMessage && <div className="text-s text-secondary"><span
+                className="font-bold">{channel.lastMessage.author}</span>: {truncateMessage(channel.lastMessage.message)}
             </div>}
-            {!channel.lastMessage && <div className={"text-s text-secondary"}>No messages</div>}
+            {!channel.lastMessage && <div className="text-s text-secondary">No messages</div>}
         </div>
-    </div>);
+    </div>
 }
 
 export default function LobbyView() {
@@ -98,12 +97,12 @@ export default function LobbyView() {
         })();
     }, []);
 
-    return (<VerticalLayout theme={"spacing padding"} className={"lobby-view h-full w-full"}>
-        <VirtualList items={channels.value} className={"flex-grow border p-s"}>
+    return (<div className="flex flex-col gap-s box-border p-m lobby-view h-full w-full">
+        <VirtualList items={channels.value} className="flex-grow border p-s">
             {({item}) => {
                 return <ChannelComponent channel={item}/>
             }}
         </VirtualList>
         {isAdmin && <AddChannelComponent/>}
-    </VerticalLayout>);
+    </div>);
 }
