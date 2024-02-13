@@ -12,7 +12,7 @@ import {VirtualList} from "@hilla/react-components/VirtualList";
 import {Avatar} from "@hilla/react-components/Avatar";
 
 import './LobbyView.css';
-import {formatPastDate, hashCode} from "Frontend/util/util";
+import {formatDate, hashCode} from "Frontend/util/util";
 
 const channels = signal<Channel[]>([]);
 
@@ -66,7 +66,7 @@ function ChannelComponent({channel}: { channel: Channel }) {
             <div className="flex items-baseline justify-start gap-s">
                 <Link to={"channel/" + channel.id} className="text-m font-bold text-body">{channel.name}</Link>
                 {channel.lastMessage && <div className="text-s text-secondary">
-                    {formatPastDate(new Date(channel.lastMessage.timestamp))}
+                    {formatDate(new Date(channel.lastMessage.timestamp))}
                 </div>}
             </div>
             {channel.lastMessage && <div className="text-s text-secondary"><span
