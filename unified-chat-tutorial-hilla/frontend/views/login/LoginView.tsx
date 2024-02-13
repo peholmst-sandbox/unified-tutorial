@@ -1,5 +1,4 @@
 import {useAuth} from "Frontend/util/auth.js";
-import {useNavigate} from "react-router-dom";
 import {LoginForm} from "@hilla/react-components/LoginForm";
 import {signal} from "@preact/signals-react";
 import {useEffect} from "react";
@@ -7,7 +6,7 @@ import {useEffect} from "react";
 export default function LoginView() {
     const {login} = useAuth();
     const hasError = signal(false);
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     useEffect(() => {
         document.title = "Login";
@@ -24,7 +23,8 @@ export default function LoginView() {
                 } else {
                     const url = redirectUrl ?? defaultUrl ?? "/";
                     const path = new URL(url, document.baseURI).pathname;
-                    navigate(path);
+                    // navigate(path); // Does not work because of https://github.com/vaadin/hilla/issues/2063
+                    document.location = path; // Workaround until the issue has been fixed
                 }
             }}
             />
