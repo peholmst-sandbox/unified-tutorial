@@ -1,4 +1,4 @@
-package com.example.application.chat;
+package com.example.application.chat.spi;
 
 import java.time.Instant;
 

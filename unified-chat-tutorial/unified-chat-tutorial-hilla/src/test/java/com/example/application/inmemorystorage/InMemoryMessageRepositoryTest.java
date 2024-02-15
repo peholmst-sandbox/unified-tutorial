@@ -1,7 +1,7 @@
-package com.example.application.chat.inmemory;
+package com.example.application.inmemorystorage;
 
-import com.example.application.chat.MessageRepository;
-import com.example.application.chat.NewMessage;
+import com.example.application.chat.spi.MessageRepository;
+import com.example.application.chat.spi.NewMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

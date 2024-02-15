@@ -1,4 +1,4 @@
 @NonNullApi
-package com.example.application.chat.inmemory;
+package com.example.application.inmemorystorage;
 
 import org.springframework.lang.NonNullApi;

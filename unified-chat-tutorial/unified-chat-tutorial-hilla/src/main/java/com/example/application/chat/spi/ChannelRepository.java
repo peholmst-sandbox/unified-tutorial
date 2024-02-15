@@ -1,4 +1,6 @@
-package com.example.application.chat;
+package com.example.application.chat.spi;
+
+import com.example.application.chat.Channel;
 
 import java.util.List;
 import java.util.Optional;

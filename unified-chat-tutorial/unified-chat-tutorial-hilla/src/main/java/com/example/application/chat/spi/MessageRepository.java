@@ -1,5 +1,6 @@
-package com.example.application.chat;
+package com.example.application.chat.spi;
 
+import com.example.application.chat.Message;
 import jakarta.annotation.Nullable;
 
 import java.util.List;

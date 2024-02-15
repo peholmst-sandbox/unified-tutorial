@@ -1,9 +1,9 @@
-package com.example.application.chat.inmemory;
+package com.example.application.inmemorystorage;
 
 import com.example.application.chat.Channel;
-import com.example.application.chat.ChannelRepository;
-import com.example.application.chat.MessageRepository;
-import com.example.application.chat.NewChannel;
+import com.example.application.chat.spi.ChannelRepository;
+import com.example.application.chat.spi.MessageRepository;
+import com.example.application.chat.spi.NewChannel;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;

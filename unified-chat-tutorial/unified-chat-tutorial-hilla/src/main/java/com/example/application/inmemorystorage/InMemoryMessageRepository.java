@@ -1,8 +1,8 @@
-package com.example.application.chat.inmemory;
+package com.example.application.inmemorystorage;
 
 import com.example.application.chat.Message;
-import com.example.application.chat.MessageRepository;
-import com.example.application.chat.NewMessage;
+import com.example.application.chat.spi.MessageRepository;
+import com.example.application.chat.spi.NewMessage;
 import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Component;
 
