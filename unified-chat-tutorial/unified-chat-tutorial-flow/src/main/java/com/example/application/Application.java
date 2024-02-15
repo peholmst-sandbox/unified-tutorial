@@ -5,6 +5,9 @@ import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.theme.Theme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import java.time.Clock;
 
 /**
  * The entry point of the Spring Boot application.
@@ -14,9 +17,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  */
 @SpringBootApplication
-@Theme(value = "my-app")
+@Theme(value = "unified-chat-tutorial-flow")
 @Push
 public class Application implements AppShellConfigurator {
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemUTC();
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

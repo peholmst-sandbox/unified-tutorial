@@ -1,23 +1,30 @@
 package com.example.application.ui.views.lobby;
 
+import com.example.application.app.chat.Channel;
+import com.example.application.app.chat.ChatService;
 import com.example.application.security.Roles;
-import com.example.application.service.ChatRoom;
-import com.example.application.service.ChatService;
-import com.example.application.ui.CurrentUser;
 import com.example.application.ui.MainLayout;
-import com.example.application.ui.views.room.RoomView;
+import com.example.application.ui.views.channel.ChannelView;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.avatar.Avatar;
+import com.vaadin.flow.component.avatar.AvatarVariant;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.spring.security.AuthenticationContext;
 import jakarta.annotation.security.PermitAll;
+
+import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 @Route(value = "", layout = MainLayout.class)
 @PageTitle("Lobby")
@@ -25,58 +32,98 @@ import jakarta.annotation.security.PermitAll;
 public class LobbyView extends VerticalLayout {
 
     private final ChatService chatService;
-    private final Grid<ChatRoom> rooms;
-    private final TextField roomNameField;
-    private final Button addRoomButton;
+    private final VirtualList<Channel> channels;
+    private final TextField channelNameField;
+    private final Button addChannelButton;
 
-    public LobbyView(ChatService chatService, CurrentUser currentUser) {
+    public LobbyView(ChatService chatService, AuthenticationContext authenticationContext) {
         this.chatService = chatService;
         setSizeFull();
+        addClassName("lobby-view");
 
-        rooms = new Grid<>();
-        rooms.setSizeFull();
-        rooms.addColumn(new ComponentRenderer<>(RouterLink::new, (link, room) -> {
-            link.setText(room.name());
-            link.setRoute(RoomView.class, room.id());
-        })).setHeader("Room Name");
-        rooms.addColumn(room -> {
-            var lastMessage = room.lastMessage();
-            return lastMessage == null ? "Never" : lastMessage.toString();
-        }).setHeader("Last Message");
-        add(rooms);
+        channels = new VirtualList<>();
+        channels.addClassNames(Border.ALL, Padding.SMALL);
+        channels.setRenderer(new ComponentRenderer<>(ChannelComponent::new));
+        add(channels);
+        expand(channels);
 
-        roomNameField = new TextField();
-        roomNameField.setPlaceholder("New chat room name");
+        channelNameField = new TextField();
+        channelNameField.setPlaceholder("New channel name");
 
-        addRoomButton = new Button("Add room", event -> addRoom());
-        addRoomButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        addRoomButton.addClickShortcut(Key.ENTER);
-        addRoomButton.setDisableOnClick(true);
+        addChannelButton = new Button("Add channel", event -> addChannel());
+        addChannelButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        addChannelButton.addClickShortcut(Key.ENTER);
+        addChannelButton.setDisableOnClick(true);
 
-        if (currentUser.hasRole(Roles.ADMIN)) {
-            var toolbar = new HorizontalLayout(roomNameField, addRoomButton);
+        if (authenticationContext.hasRole(Roles.ADMIN)) { // Waits for https://github.com/vaadin/flow/pull/18700 to be merged
+            var toolbar = new HorizontalLayout(channelNameField,
+                    addChannelButton);
             toolbar.setWidthFull();
-            toolbar.expand(roomNameField);
+            toolbar.expand(channelNameField);
             add(toolbar);
         }
 
-        refreshRooms();
+        refreshChannels();
     }
 
-    private void addRoom() {
+    private void addChannel() {
         try {
-            var nameOfNewRoom = roomNameField.getValue();
-            if (!nameOfNewRoom.isBlank()) {
-                chatService.createRoom(nameOfNewRoom);
-                roomNameField.clear();
-                refreshRooms();
+            var nameOfNewChannel = channelNameField.getValue();
+            if (!nameOfNewChannel.isBlank()) {
+                chatService.createChannel(nameOfNewChannel);
+                channelNameField.clear();
+                refreshChannels();
             }
         } finally {
-            addRoomButton.setEnabled(true);
+            addChannelButton.setEnabled(true);
         }
     }
 
-    private void refreshRooms() {
-        rooms.setItems(chatService.rooms());
+    private void refreshChannels() {
+        channels.setItems(chatService.channels());
+    }
+
+    private static class ChannelComponent extends Div {
+        public ChannelComponent(Channel channel) {
+            addClassNames(Display.FLEX, Gap.MEDIUM, Padding.MEDIUM, BorderRadius.MEDIUM, "channel");
+
+            var avatar = new Avatar(channel.name());
+            avatar.addThemeVariants(AvatarVariant.LUMO_SMALL);
+            avatar.setColorIndex(Math.abs(channel.id().hashCode() % 7));
+            add(avatar);
+
+            var contentDiv = new Div();
+            contentDiv.addClassNames(Display.FLEX, Flex.AUTO, FlexDirection.COLUMN, LineHeight.XSMALL, Gap.XSMALL);
+            add(contentDiv);
+
+            var channelDiv = new Div();
+            channelDiv.addClassNames(Display.FLEX, AlignItems.BASELINE, JustifyContent.START, Gap.SMALL);
+            contentDiv.add(channelDiv);
+
+            var channelLink = new RouterLink(channel.name(), ChannelView.class, channel.id());
+            channelLink.addClassNames(FontSize.MEDIUM, FontWeight.BOLD, TextColor.BODY);
+            channelDiv.add(channelLink);
+
+            if (channel.lastMessage() != null) {
+                var lastMessageTimestamp = new Div(channel.lastMessage().timestamp().toString()); // TODO Format date
+                lastMessageTimestamp.addClassNames(FontSize.SMALL, TextColor.SECONDARY);
+                channelDiv.add(lastMessageTimestamp);
+            }
+
+            var lastMessage = new Div();
+            lastMessage.addClassNames(FontSize.SMALL, TextColor.SECONDARY);
+            contentDiv.add(lastMessage);
+            if (channel.lastMessage() != null) {
+                var author = new Span(channel.lastMessage().author());
+                author.addClassNames(FontWeight.BOLD);
+                lastMessage.add(author, new Text(": " + truncateMessage(channel.lastMessage().message())));
+            } else {
+                lastMessage.setText("No messages yet");
+            }
+        }
+
+        private String truncateMessage(String msg) {
+            return msg.length() > 50 ? msg.substring(0, 50) + "..." : msg;
+        }
     }
 }

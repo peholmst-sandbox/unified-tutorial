@@ -13,6 +13,7 @@ import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.spring.security.AuthenticationContext;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
@@ -21,11 +22,11 @@ import static com.vaadin.flow.theme.lumo.LumoUtility.*;
  */
 public class MainLayout extends AppLayout {
 
-    private final CurrentUser currentUser;
+    private final AuthenticationContext authenticationContext;
     private H2 viewTitle;
 
-    public MainLayout(CurrentUser currentUser) {
-        this.currentUser = currentUser;
+    public MainLayout(AuthenticationContext authenticationContext) {
+        this.authenticationContext = authenticationContext;
 
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
@@ -40,7 +41,7 @@ public class MainLayout extends AppLayout {
         viewTitle = new H2();
         viewTitle.addClassNames(FontSize.LARGE, Margin.NONE, Flex.GROW);
 
-        var logout = new Button("Logout " + currentUser.getName(), event -> currentUser.logout());
+        var logout = new Button("Logout " + authenticationContext.getPrincipalName().orElse(""), event -> authenticationContext.logout());
 
         var header = new Header(toggle, viewTitle, logout);
         header.addClassNames(AlignItems.CENTER, Display.FLEX, Padding.End.MEDIUM, Width.FULL);
