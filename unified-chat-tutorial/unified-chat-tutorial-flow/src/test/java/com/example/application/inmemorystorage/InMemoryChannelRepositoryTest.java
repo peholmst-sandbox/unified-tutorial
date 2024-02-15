@@ -1,10 +1,10 @@
-package com.example.application.app.inmemorystorage;
+package com.example.application.inmemorystorage;
 
-import com.example.application.app.chat.Channel;
-import com.example.application.app.chat.Message;
-import com.example.application.app.chat.spi.ChannelRepository;
-import com.example.application.app.chat.spi.MessageRepository;
-import com.example.application.app.chat.spi.NewChannel;
+import com.example.application.chat.Channel;
+import com.example.application.chat.Message;
+import com.example.application.chat.spi.ChannelRepository;
+import com.example.application.chat.spi.MessageRepository;
+import com.example.application.chat.spi.NewChannel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

@@ -1,7 +1,7 @@
-package com.example.application.app.chat;
+package com.example.application.chat;
 
-import com.example.application.app.chat.spi.ChannelRepository;
-import com.example.application.app.chat.spi.NewChannel;
+import com.example.application.chat.spi.ChannelRepository;
+import com.example.application.chat.spi.NewChannel;
 import com.example.application.security.Roles;
 import jakarta.annotation.PostConstruct;
 import org.assertj.core.api.Assertions;

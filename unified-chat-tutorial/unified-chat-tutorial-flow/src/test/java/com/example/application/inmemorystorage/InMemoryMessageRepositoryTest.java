@@ -1,7 +1,7 @@
-package com.example.application.app.inmemorystorage;
+package com.example.application.inmemorystorage;
 
-import com.example.application.app.chat.spi.MessageRepository;
-import com.example.application.app.chat.spi.NewMessage;
+import com.example.application.chat.spi.MessageRepository;
+import com.example.application.chat.spi.NewMessage;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

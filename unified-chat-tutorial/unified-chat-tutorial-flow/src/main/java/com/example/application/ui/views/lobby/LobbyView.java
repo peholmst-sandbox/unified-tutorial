@@ -1,7 +1,7 @@
 package com.example.application.ui.views.lobby;
 
-import com.example.application.app.chat.Channel;
-import com.example.application.app.chat.ChatService;
+import com.example.application.chat.Channel;
+import com.example.application.chat.ChatService;
 import com.example.application.security.Roles;
 import com.example.application.ui.MainLayout;
 import com.example.application.ui.views.channel.ChannelView;

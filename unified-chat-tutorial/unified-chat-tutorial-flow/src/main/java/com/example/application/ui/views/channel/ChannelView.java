@@ -1,7 +1,7 @@
 package com.example.application.ui.views.channel;
 
-import com.example.application.app.chat.ChatService;
-import com.example.application.app.chat.Message;
+import com.example.application.chat.ChatService;
+import com.example.application.chat.Message;
 import com.example.application.ui.MainLayout;
 import com.example.application.ui.views.lobby.LobbyView;
 import com.example.application.util.LimitedSortedAppendOnlyList;
