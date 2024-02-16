@@ -5,6 +5,7 @@ import com.example.application.chat.ChatService;
 import com.example.application.security.Roles;
 import com.example.application.ui.MainLayout;
 import com.example.application.ui.views.channel.ChannelView;
+import com.example.application.util.DateFormatUtil;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -55,7 +56,7 @@ public class LobbyView extends VerticalLayout {
         addChannelButton.addClickShortcut(Key.ENTER);
         addChannelButton.setDisableOnClick(true);
 
-        if (authenticationContext.hasRole(Roles.ADMIN)) { // Waits for https://github.com/vaadin/flow/pull/18700 to be merged
+        if (authenticationContext.hasRole(Roles.ADMIN)) {
             var toolbar = new HorizontalLayout(channelNameField,
                     addChannelButton);
             toolbar.setWidthFull();
@@ -105,7 +106,7 @@ public class LobbyView extends VerticalLayout {
             channelDiv.add(channelLink);
 
             if (channel.lastMessage() != null) {
-                var lastMessageTimestamp = new Div(channel.lastMessage().timestamp().toString()); // TODO Format date
+                var lastMessageTimestamp = new Div(DateFormatUtil.formatInstant(channel.lastMessage().timestamp(), getLocale()));
                 lastMessageTimestamp.addClassNames(FontSize.SMALL, TextColor.SECONDARY);
                 channelDiv.add(lastMessageTimestamp);
             }
