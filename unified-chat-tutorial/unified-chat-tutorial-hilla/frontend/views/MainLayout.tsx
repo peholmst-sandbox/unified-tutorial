@@ -1,15 +1,15 @@
-import {AppLayout} from "@hilla/react-components/AppLayout.js";
-import {DrawerToggle} from "@hilla/react-components/DrawerToggle.js";
+import {AppLayout} from "@vaadin/react-components/AppLayout.js";
+import {DrawerToggle} from "@vaadin/react-components/DrawerToggle.js";
 import Placeholder from "Frontend/components/placeholder/Placeholder.js";
 import {useAuth} from "Frontend/util/auth.js";
 import {Suspense} from "react";
 import {Outlet} from "react-router-dom";
-import {SideNav} from "@hilla/react-components/SideNav";
-import {SideNavItem} from "@hilla/react-components/SideNavItem";
-import {Icon} from "@hilla/react-components/Icon";
-import {Scroller} from "@hilla/react-components/Scroller";
-import {Button} from "@hilla/react-components/Button";
-import {Tooltip} from "@hilla/react-components/Tooltip";
+import {SideNav} from "@vaadin/react-components/SideNav";
+import {SideNavItem} from "@vaadin/react-components/SideNavItem";
+import {Icon} from "@vaadin/react-components/Icon";
+import {Scroller} from "@vaadin/react-components/Scroller";
+import {Button} from "@vaadin/react-components/Button";
+import {Tooltip} from "@vaadin/react-components/Tooltip";
 import {computed, effect, signal} from "@preact/signals-react";
 
 export const pageTitle = signal<string | undefined>(undefined);

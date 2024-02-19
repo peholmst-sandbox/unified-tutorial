@@ -1,4 +1,4 @@
-import {protectRoutes} from '@hilla/react-auth';
+import {protectRoutes} from '@vaadin/hilla-react-auth';
 import LoginView from 'Frontend/views/login/LoginView.js';
 import MainLayout from 'Frontend/views/MainLayout.js';
 import {createBrowserRouter, RouteObject} from 'react-router-dom';

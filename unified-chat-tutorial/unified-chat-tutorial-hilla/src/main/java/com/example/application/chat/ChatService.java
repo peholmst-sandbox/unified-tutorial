@@ -5,7 +5,7 @@ import com.example.application.chat.spi.MessageRepository;
 import com.example.application.chat.spi.NewChannel;
 import com.example.application.chat.spi.NewMessage;
 import com.example.application.security.Roles;
-import dev.hilla.BrowserCallable;
+import com.vaadin.hilla.BrowserCallable;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;

@@ -1,5 +1,5 @@
 import {useAuth} from "Frontend/util/auth.js";
-import {LoginForm} from "@hilla/react-components/LoginForm";
+import {LoginForm} from "@vaadin/react-components/LoginForm";
 import {signal} from "@preact/signals-react";
 import {useEffect} from "react";
 

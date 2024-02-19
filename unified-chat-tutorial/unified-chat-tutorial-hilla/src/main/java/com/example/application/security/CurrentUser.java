@@ -1,9 +1,8 @@
 package com.example.application.security;
 
-import dev.hilla.BrowserCallable;
+import com.vaadin.flow.spring.security.AuthenticationContext;
+import com.vaadin.hilla.BrowserCallable;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
 
@@ -11,12 +10,15 @@ import java.util.Optional;
 @PermitAll
 public class CurrentUser {
 
+    private final AuthenticationContext authenticationContext;
+
+    public CurrentUser(AuthenticationContext authenticationContext) {
+        this.authenticationContext = authenticationContext;
+    }
+
     public Optional<User> get() {
-        return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
-                .filter(auth -> !(auth instanceof AnonymousAuthenticationToken))
-                .map(auth -> new User(
-                        auth.getName(),
-                        auth.getAuthorities().stream().filter(Roles::isRole).map(Roles::toRoleName).toArray(String[]::new)
-                ));
+        return authenticationContext
+                .getPrincipalName()
+                .map(name -> new User(name, authenticationContext.getGrantedRoles().toArray(new String[0])));
     }
 }

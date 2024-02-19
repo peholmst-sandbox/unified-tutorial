@@ -1,6 +1,6 @@
 import {signal} from "@preact/signals-react";
 import connectClient from "Frontend/generated/connect-client.default";
-import {State} from "@hilla/frontend";
+import {State} from "@vaadin/hilla-frontend";
 
 export const connectionActive = signal(connectClient.fluxConnection.state == State.ACTIVE);
 

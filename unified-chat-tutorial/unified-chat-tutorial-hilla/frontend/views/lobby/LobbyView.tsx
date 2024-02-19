@@ -1,18 +1,18 @@
 import {ChatService} from "Frontend/generated/endpoints";
 import {useAuth} from "Frontend/util/auth";
-import {TextField} from "@hilla/react-components/TextField";
-import {Button} from "@hilla/react-components/Button";
-import {Notification} from "@hilla/react-components/Notification";
+import {TextField} from "@vaadin/react-components/TextField";
+import {Button} from "@vaadin/react-components/Button";
+import {Notification} from "@vaadin/react-components/Notification";
 import {Link} from "react-router-dom";
 import {pageTitle} from "Frontend/views/MainLayout";
 import {signal, useSignal} from "@preact/signals-react";
 import {useEffect} from "react";
 import Channel from "Frontend/generated/com/example/application/chat/Channel";
-import {VirtualList} from "@hilla/react-components/VirtualList";
-import {Avatar} from "@hilla/react-components/Avatar";
+import {VirtualList} from "@vaadin/react-components/VirtualList";
+import {Avatar} from "@vaadin/react-components/Avatar";
+import {formatDate, hashCode} from "Frontend/util/util";
 
 import './LobbyView.css';
-import {formatDate, hashCode} from "Frontend/util/util";
 
 const channels = signal<Channel[]>([]);
 
