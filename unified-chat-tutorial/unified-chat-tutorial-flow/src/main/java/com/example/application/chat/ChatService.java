@@ -60,8 +60,9 @@ public class ChatService {
                 "DIY Den",
                 "Language Labyrinth"
         };
-        for (String channel : chatChannels) {
-            createChannel(channel);
+        for (String channelName : chatChannels) {
+            var channel = createChannel(channelName);
+            log.info("Created channel: {} (http://localhost:8080/channel/{})", channel.name(), channel.id());
         }
     }
 
