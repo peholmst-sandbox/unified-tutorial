@@ -11,5 +11,6 @@
     <modules>
         <module>unified-chat-tutorial-flow</module>
         <module>unified-chat-tutorial-hilla</module>
+        <module>unified-chat-tutorial-starter</module>
     </modules>
 </project>
