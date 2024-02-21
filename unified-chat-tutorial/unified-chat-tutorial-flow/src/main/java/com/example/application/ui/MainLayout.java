@@ -30,10 +30,10 @@ public class MainLayout extends AppLayout {
 
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
-        addHeaderContent();
+        addNavbarContent();
     }
 
-    private void addHeaderContent() {
+    private void addNavbarContent() {
         var toggle = new DrawerToggle();
         toggle.setAriaLabel("Menu toggle");
         toggle.setTooltipText("Menu toggle");
@@ -46,7 +46,7 @@ public class MainLayout extends AppLayout {
         var header = new Header(toggle, viewTitle, logout);
         header.addClassNames(AlignItems.CENTER, Display.FLEX, Padding.End.MEDIUM, Width.FULL);
 
-        addToNavbar(true, header);
+        addToNavbar(false, header);
     }
 
     private void addDrawerContent() {
@@ -54,10 +54,10 @@ public class MainLayout extends AppLayout {
         appName.addClassNames(AlignItems.CENTER, Display.FLEX, FontSize.LARGE, FontWeight.SEMIBOLD, Height.XLARGE,
                 Padding.Horizontal.MEDIUM);
 
-        addToDrawer(appName, new Scroller(createNavigation()));
+        addToDrawer(appName, new Scroller(createSideNav()));
     }
 
-    private SideNav createNavigation() {
+    private SideNav createSideNav() {
         SideNav nav = new SideNav();
 
         nav.addItem(new SideNavItem("Lobby", LobbyView.class, VaadinIcon.BUILDING.create()));
