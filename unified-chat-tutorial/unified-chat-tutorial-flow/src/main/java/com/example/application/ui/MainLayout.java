@@ -72,7 +72,9 @@ public class MainLayout extends AppLayout {
     }
 
     private String getCurrentPageTitle() {
-        if (getContent() instanceof HasDynamicTitle titleHolder) {
+        if (getContent() == null) {
+            return "";
+        } else if (getContent() instanceof HasDynamicTitle titleHolder) {
             return titleHolder.getPageTitle();
         } else {
             var title = getContent().getClass().getAnnotation(PageTitle.class);
