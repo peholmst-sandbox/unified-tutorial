@@ -16,6 +16,7 @@ import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.security.AuthenticationContext;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.PermitAll;
 import reactor.core.Disposable;
 
@@ -50,6 +51,7 @@ public class ChannelView extends VerticalLayout implements HasUrlParameter<Strin
         add(messageList);
 
         var messageInput = new MessageInput(event -> sendMessage(event.getValue()));
+        messageInput.addClassNames(LumoUtility.Padding.NONE);
         messageInput.setWidthFull();
 
         add(messageInput);

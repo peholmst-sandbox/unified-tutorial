@@ -6,6 +6,7 @@ import com.example.application.security.Roles;
 import com.example.application.ui.MainLayout;
 import com.example.application.ui.views.channel.ChannelView;
 import com.example.application.util.DateFormatUtil;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -44,7 +45,7 @@ public class LobbyView extends VerticalLayout {
 
         channels = new VirtualList<>();
         channels.addClassNames(Border.ALL, Padding.SMALL);
-        channels.setRenderer(new ComponentRenderer<>(ChannelComponent::new));
+        channels.setRenderer(new ComponentRenderer<>(this::createChannelComponent));
         add(channels);
         expand(channels);
 
@@ -84,47 +85,48 @@ public class LobbyView extends VerticalLayout {
         channels.setItems(chatService.channels());
     }
 
-    private static class ChannelComponent extends Div {
-        public ChannelComponent(Channel channel) {
-            addClassNames(Display.FLEX, Gap.MEDIUM, Padding.MEDIUM, BorderRadius.MEDIUM, "channel");
+    private Component createChannelComponent(Channel channel) {
+        var div = new Div();
+        div.addClassNames(Display.FLEX, Gap.MEDIUM, Padding.MEDIUM, BorderRadius.MEDIUM, "channel");
 
-            var avatar = new Avatar(channel.name());
-            avatar.addThemeVariants(AvatarVariant.LUMO_SMALL);
-            avatar.setColorIndex(Math.abs(channel.id().hashCode() % 7));
-            add(avatar);
+        var avatar = new Avatar(channel.name());
+        avatar.addThemeVariants(AvatarVariant.LUMO_SMALL);
+        avatar.setColorIndex(Math.abs(channel.id().hashCode() % 7));
+        div.add(avatar);
 
-            var contentDiv = new Div();
-            contentDiv.addClassNames(Display.FLEX, Flex.AUTO, FlexDirection.COLUMN, LineHeight.XSMALL, Gap.XSMALL);
-            add(contentDiv);
+        var contentDiv = new Div();
+        contentDiv.addClassNames(Display.FLEX, Flex.AUTO, FlexDirection.COLUMN, LineHeight.XSMALL, Gap.XSMALL);
+        div.add(contentDiv);
 
-            var channelDiv = new Div();
-            channelDiv.addClassNames(Display.FLEX, AlignItems.BASELINE, JustifyContent.START, Gap.SMALL);
-            contentDiv.add(channelDiv);
+        var channelDiv = new Div();
+        channelDiv.addClassNames(Display.FLEX, AlignItems.BASELINE, JustifyContent.START, Gap.SMALL);
+        contentDiv.add(channelDiv);
 
-            var channelLink = new RouterLink(channel.name(), ChannelView.class, channel.id());
-            channelLink.addClassNames(FontSize.MEDIUM, FontWeight.BOLD, TextColor.BODY);
-            channelDiv.add(channelLink);
+        var channelLink = new RouterLink(channel.name(), ChannelView.class, channel.id());
+        channelLink.addClassNames(FontSize.MEDIUM, FontWeight.BOLD, TextColor.BODY);
+        channelDiv.add(channelLink);
 
-            if (channel.lastMessage() != null) {
-                var lastMessageTimestamp = new Div(DateFormatUtil.formatInstant(channel.lastMessage().timestamp(), getLocale()));
-                lastMessageTimestamp.addClassNames(FontSize.SMALL, TextColor.SECONDARY);
-                channelDiv.add(lastMessageTimestamp);
-            }
-
-            var lastMessage = new Div();
-            lastMessage.addClassNames(FontSize.SMALL, TextColor.SECONDARY);
-            contentDiv.add(lastMessage);
-            if (channel.lastMessage() != null) {
-                var author = new Span(channel.lastMessage().author());
-                author.addClassNames(FontWeight.BOLD);
-                lastMessage.add(author, new Text(": " + truncateMessage(channel.lastMessage().message())));
-            } else {
-                lastMessage.setText("No messages yet");
-            }
+        if (channel.lastMessage() != null) {
+            var lastMessageTimestamp = new Div(DateFormatUtil.formatInstant(channel.lastMessage().timestamp(), getLocale()));
+            lastMessageTimestamp.addClassNames(FontSize.SMALL, TextColor.SECONDARY);
+            channelDiv.add(lastMessageTimestamp);
         }
 
-        private String truncateMessage(String msg) {
-            return msg.length() > 50 ? msg.substring(0, 50) + "..." : msg;
+        var lastMessage = new Div();
+        lastMessage.addClassNames(FontSize.SMALL, TextColor.SECONDARY);
+        contentDiv.add(lastMessage);
+        if (channel.lastMessage() != null) {
+            var author = new Span(channel.lastMessage().author());
+            author.addClassNames(FontWeight.BOLD);
+            lastMessage.add(author, new Text(": " + truncateMessage(channel.lastMessage().message())));
+        } else {
+            lastMessage.setText("No messages yet");
         }
+        return div;
     }
+
+    private String truncateMessage(String msg) {
+        return msg.length() > 50 ? msg.substring(0, 50) + "..." : msg;
+    }
+
 }
