@@ -6,6 +6,7 @@ import com.example.application.security.Roles;
 import com.example.application.ui.MainLayout;
 import com.example.application.ui.views.channel.ChannelView;
 import com.example.application.util.DateFormatUtil;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
@@ -64,7 +65,10 @@ public class LobbyView extends VerticalLayout {
             toolbar.expand(channelNameField);
             add(toolbar);
         }
+    }
 
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
         refreshChannels();
     }
 
