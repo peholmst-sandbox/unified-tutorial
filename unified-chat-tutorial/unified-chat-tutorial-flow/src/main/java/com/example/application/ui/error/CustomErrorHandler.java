@@ -4,14 +4,15 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.server.ErrorEvent;
+import com.vaadin.flow.server.ErrorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
-public class ErrorHandler implements com.vaadin.flow.server.ErrorHandler {
+class CustomErrorHandler implements ErrorHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(ErrorHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(CustomErrorHandler.class);
 
     @Override
     public void error(ErrorEvent event) {
