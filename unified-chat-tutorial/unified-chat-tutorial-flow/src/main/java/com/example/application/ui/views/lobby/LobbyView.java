@@ -10,7 +10,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.avatar.Avatar;
-import com.vaadin.flow.component.avatar.AvatarVariant;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
@@ -100,7 +99,6 @@ public class LobbyView extends VerticalLayout {
         div.addClassNames(Display.FLEX, Gap.MEDIUM, Padding.MEDIUM, BorderRadius.MEDIUM, "channel");
 
         var avatar = new Avatar(channel.name());
-        avatar.addThemeVariants(AvatarVariant.LUMO_SMALL);
         avatar.setColorIndex(Math.abs(channel.id().hashCode() % 7));
         div.add(avatar);
 
