@@ -5,7 +5,6 @@ import com.example.application.chat.ChatService;
 import com.example.application.security.Roles;
 import com.example.application.ui.MainLayout;
 import com.example.application.ui.views.channel.ChannelView;
-import com.example.application.util.DateFormatUtil;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
@@ -26,6 +25,13 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.spring.security.AuthenticationContext;
 import jakarta.annotation.security.PermitAll;
+
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
@@ -111,7 +117,7 @@ public class LobbyView extends VerticalLayout {
         channelDiv.add(channelLink);
 
         if (channel.lastMessage() != null) {
-            var lastMessageTimestamp = new Div(DateFormatUtil.formatInstant(channel.lastMessage().timestamp(), getLocale()));
+            var lastMessageTimestamp = new Div(formatInstant(channel.lastMessage().timestamp(), getLocale()));
             lastMessageTimestamp.addClassNames(FontSize.SMALL, TextColor.SECONDARY);
             channelDiv.add(lastMessageTimestamp);
         }
@@ -133,4 +139,9 @@ public class LobbyView extends VerticalLayout {
         return msg.length() > 50 ? msg.substring(0, 50) + "..." : msg;
     }
 
+    private String formatInstant(Instant instant, Locale locale) {
+        return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+                .withLocale(locale)
+                .format(ZonedDateTime.ofInstant(instant, ZoneId.systemDefault()));
+    }
 }
