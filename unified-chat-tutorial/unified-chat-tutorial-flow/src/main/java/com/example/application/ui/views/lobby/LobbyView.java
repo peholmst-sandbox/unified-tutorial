@@ -47,10 +47,9 @@ public class LobbyView extends VerticalLayout {
     public LobbyView(ChatService chatService, AuthenticationContext authenticationContext) {
         this.chatService = chatService;
         setSizeFull();
-        addClassName("lobby-view");
 
         channels = new VirtualList<>();
-        channels.addClassNames(Border.ALL, Padding.SMALL);
+        channels.addClassNames(Border.ALL, Padding.SMALL, "channel-list");
         channels.setRenderer(new ComponentRenderer<>(this::createChannelComponent));
         add(channels);
         expand(channels);

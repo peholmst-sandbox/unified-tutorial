@@ -11,13 +11,9 @@ import java.time.Clock;
 
 /**
  * The entry point of the Spring Boot application.
- *
- * Use the @PWA annotation make the application installable on phones, tablets
- * and some desktop browsers.
- *
  */
 @SpringBootApplication
-@Theme(value = "unified-chat-tutorial-flow")
+@Theme("unified-chat-tutorial-flow")
 @Push
 public class Application implements AppShellConfigurator {
 

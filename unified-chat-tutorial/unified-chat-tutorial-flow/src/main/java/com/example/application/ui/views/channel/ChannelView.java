@@ -41,7 +41,6 @@ public class ChannelView extends VerticalLayout implements HasUrlParameter<Strin
         this.chatService = chatService;
         this.currentUserName = authenticationContext.getPrincipalName().orElseThrow();
         setSizeFull();
-        addClassName("channel-view");
 
         receivedMessages = new LimitedSortedAppendOnlyList<>(HISTORY_SIZE, Comparator.comparing(Message::sequenceNumber));
 
@@ -51,7 +50,6 @@ public class ChannelView extends VerticalLayout implements HasUrlParameter<Strin
         add(messageList);
 
         var messageInput = new MessageInput(event -> sendMessage(event.getValue()));
-        messageInput.addClassNames(LumoUtility.Padding.NONE);
         messageInput.setWidthFull();
 
         add(messageInput);
@@ -91,8 +89,9 @@ public class ChannelView extends VerticalLayout implements HasUrlParameter<Strin
     private MessageListItem createMessageListItem(Message message) {
         var item = new MessageListItem(message.message(), message.timestamp(), message.author());
         item.setUserColorIndex(Math.abs(message.author().hashCode() % 7));
+        item.addClassNames(LumoUtility.Margin.SMALL, LumoUtility.BorderRadius.MEDIUM);
         if (message.author().equals(currentUserName)) {
-            item.addThemeNames("current-user");
+            item.addClassNames(LumoUtility.Background.CONTRAST_5);
         }
         return item;
     }
