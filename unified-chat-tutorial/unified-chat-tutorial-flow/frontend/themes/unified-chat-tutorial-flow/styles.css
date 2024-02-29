@@ -2,6 +2,4 @@ vaadin-message-input {
     padding: 0;
 }
 
-.channel-list .channel:hover {
-    background-color: var(--lumo-contrast-5pct);
-}
+@import "channel-list.css";

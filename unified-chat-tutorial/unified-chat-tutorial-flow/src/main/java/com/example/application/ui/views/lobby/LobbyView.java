@@ -94,42 +94,41 @@ public class LobbyView extends VerticalLayout {
     }
 
     private Component createChannelComponent(Channel channel) {
-        var div = new Div();
-        div.addClassNames(Display.FLEX, Gap.MEDIUM, Padding.MEDIUM, BorderRadius.MEDIUM, "channel");
+        var channelComponent = new Div();
+        channelComponent.addClassNames("channel");
 
         var avatar = new Avatar(channel.name());
         avatar.setColorIndex(Math.abs(channel.id().hashCode() % 7));
-        div.add(avatar);
+        channelComponent.add(avatar);
 
         var contentDiv = new Div();
-        contentDiv.addClassNames(Display.FLEX, Flex.AUTO, FlexDirection.COLUMN, LineHeight.XSMALL, Gap.XSMALL);
-        div.add(contentDiv);
+        contentDiv.addClassNames("content");
+        channelComponent.add(contentDiv);
 
-        var channelDiv = new Div();
-        channelDiv.addClassNames(Display.FLEX, AlignItems.BASELINE, JustifyContent.START, Gap.SMALL);
-        contentDiv.add(channelDiv);
+        var channelName = new Div();
+        channelName.addClassNames("name");
+        contentDiv.add(channelName);
 
         var channelLink = new RouterLink(channel.name(), ChannelView.class, channel.id());
-        channelLink.addClassNames(FontSize.MEDIUM, FontWeight.BOLD, TextColor.BODY);
-        channelDiv.add(channelLink);
+        channelName.add(channelLink);
 
         if (channel.lastMessage() != null) {
-            var lastMessageTimestamp = new Div(formatInstant(channel.lastMessage().timestamp(), getLocale()));
-            lastMessageTimestamp.addClassNames(FontSize.SMALL, TextColor.SECONDARY);
-            channelDiv.add(lastMessageTimestamp);
+            var lastMessageTimestamp = new Span(formatInstant(channel.lastMessage().timestamp(), getLocale()));
+            lastMessageTimestamp.addClassNames("last-message-timestamp");
+            channelName.add(lastMessageTimestamp);
         }
 
-        var lastMessage = new Div();
-        lastMessage.addClassNames(FontSize.SMALL, TextColor.SECONDARY);
+        var lastMessage = new Span();
+        lastMessage.addClassNames("last-message");
         contentDiv.add(lastMessage);
         if (channel.lastMessage() != null) {
             var author = new Span(channel.lastMessage().author());
-            author.addClassNames(FontWeight.BOLD);
+            author.addClassNames("author");
             lastMessage.add(author, new Text(": " + truncateMessage(channel.lastMessage().message())));
         } else {
             lastMessage.setText("No messages yet");
         }
-        return div;
+        return channelComponent;
     }
 
     private String truncateMessage(String msg) {
