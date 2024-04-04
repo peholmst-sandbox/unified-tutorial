@@ -105,6 +105,7 @@ public class ChannelView extends VerticalLayout implements HasUrlParameter<Strin
     @Override
     public void setParameter(BeforeEvent event, String channelId) {
         this.channelId = channelId;
+        
         chatService.channel(channelId).ifPresentOrElse(
                 channel -> this.channelName = channel.name(),
                 () -> event.forwardTo(LobbyView.class)
