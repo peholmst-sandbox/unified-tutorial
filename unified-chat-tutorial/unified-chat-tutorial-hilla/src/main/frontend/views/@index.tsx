@@ -1,18 +1,23 @@
 import {ChatService} from "Frontend/generated/endpoints";
-import {useAuth} from "Frontend/util/auth";
+import {useAuth} from "Frontend/auth";
 import {TextField} from "@vaadin/react-components/TextField";
 import {Button} from "@vaadin/react-components/Button";
 import {Notification} from "@vaadin/react-components/Notification";
 import {Link} from "react-router-dom";
-import {pageTitle} from "Frontend/views/MainLayout";
-import {signal, useSignal} from "@preact/signals-react";
+import {signal, useSignal} from "@vaadin/hilla-react-signals";
 import {useEffect} from "react";
 import Channel from "Frontend/generated/com/example/application/chat/Channel";
 import {VirtualList} from "@vaadin/react-components/VirtualList";
 import {Avatar} from "@vaadin/react-components/Avatar";
 import {formatDate, hashCode} from "Frontend/util/util";
 
-import './LobbyView.css';
+import './_index.css';
+import {ViewConfig} from "@vaadin/hilla-file-router/types.js";
+
+export const config: ViewConfig = {
+    title: "Channels",
+    loginRequired: true,
+}
 
 const channels = signal<Channel[]>([]);
 
@@ -77,12 +82,11 @@ function ChannelComponent({channel}: { channel: Channel }) {
     </div>
 }
 
-export default function LobbyView() {
+export default function Index() {
     const {hasAccess} = useAuth();
     const isAdmin = hasAccess({rolesAllowed: ["ADMIN"]});
 
     useEffect(() => {
-        pageTitle.value = "Channels";
         (async () => {
             try {
                 channels.value = await ChatService.channels();

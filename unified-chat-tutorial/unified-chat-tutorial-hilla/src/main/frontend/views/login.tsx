@@ -1,16 +1,16 @@
-import {useAuth} from "Frontend/util/auth.js";
+import {useAuth} from "Frontend/auth";
 import {LoginForm} from "@vaadin/react-components/LoginForm";
-import {signal} from "@preact/signals-react";
-import {useEffect} from "react";
+import {signal} from "@vaadin/hilla-react-signals";
+import {ViewConfig} from "@vaadin/hilla-file-router/types.js";
 
-export default function LoginView() {
+export const config: ViewConfig = {
+    title: "Login",
+    loginRequired: false,
+};
+
+export default function Login() {
     const {login} = useAuth();
     const hasError = signal(false);
-    //const navigate = useNavigate();
-
-    useEffect(() => {
-        document.title = "Login";
-    }, []);
 
     return (
         <div className="flex flex-col h-full w-full items-center justify-center gap-m">
@@ -22,9 +22,7 @@ export default function LoginView() {
                     hasError.value = true;
                 } else {
                     const url = redirectUrl ?? defaultUrl ?? "/";
-                    const path = new URL(url, document.baseURI).pathname;
-                    // navigate(path); // Does not work because of https://github.com/vaadin/hilla/issues/2063
-                    document.location = path; // Workaround until the issue has been fixed
+                    document.location = new URL(url, document.baseURI).pathname; // Because of https://github.com/vaadin/hilla/issues/2063
                 }
             }}
             />

@@ -5,8 +5,7 @@ import {VerticalLayout} from "@vaadin/react-components/VerticalLayout";
 import {MessageList} from "@vaadin/react-components/MessageList";
 import {MessageInput} from "@vaadin/react-components/MessageInput";
 import {Subscription} from "@vaadin/hilla-frontend";
-import {useAuth} from "Frontend/util/auth";
-import {pageTitle} from "Frontend/views/MainLayout";
+import {useAuth} from "Frontend/auth";
 import {useSignal} from "@preact/signals-react";
 import Message from "Frontend/generated/com/example/application/chat/Message";
 import {connectionActive} from "Frontend/util/workarounds";
@@ -15,7 +14,13 @@ import Channel from "Frontend/generated/com/example/application/chat/Channel";
 import {formatDate, hashCode} from "Frontend/util/util";
 import {Button} from "@vaadin/react-components/Button";
 
-import './ChannelView.css';
+import './_index.css';
+import {ViewConfig} from "@vaadin/hilla-file-router/types.js";
+
+export const config: ViewConfig = {
+    title: "Channel",
+    loginRequired: true,
+}
 
 const HISTORY_SIZE = 20; // A small number to demonstrate the feature
 
@@ -98,7 +103,7 @@ export default function ChannelView() {
         if (!channel.value) {
             navigate("/");
         } else {
-            pageTitle.value = channel.value.name;
+            //pageTitle.value = channel.value.name;
         }
     }
 
