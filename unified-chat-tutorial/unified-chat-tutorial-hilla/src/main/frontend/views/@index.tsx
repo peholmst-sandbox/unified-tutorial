@@ -12,6 +12,7 @@ import {Avatar} from "@vaadin/react-components/Avatar";
 import {formatDate, hashCode} from "Frontend/util/util";
 
 import {ViewConfig} from "@vaadin/hilla-file-router/types.js";
+import {pageTitle} from "Frontend/views/@layout";
 
 export const config: ViewConfig = {
     title: "Channels",
@@ -81,9 +82,10 @@ function ChannelComponent({channel}: { channel: Channel }) {
     </div>
 }
 
-export default function Index() {
+export default function LobbyView() {
     const {hasAccess} = useAuth();
     const isAdmin = hasAccess({rolesAllowed: ["ADMIN"]});
+    pageTitle.value = "Lobby";
 
     useEffect(() => {
         (async () => {

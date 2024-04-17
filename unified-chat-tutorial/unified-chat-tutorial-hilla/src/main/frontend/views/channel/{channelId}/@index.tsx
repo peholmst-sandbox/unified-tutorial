@@ -15,9 +15,9 @@ import {formatDate, hashCode} from "Frontend/util/util";
 import {Button} from "@vaadin/react-components/Button";
 
 import {ViewConfig} from "@vaadin/hilla-file-router/types.js";
+import {pageTitle} from "Frontend/views/@layout";
 
 export const config: ViewConfig = {
-    title: "Channel",
     loginRequired: true,
 }
 
@@ -102,7 +102,7 @@ export default function ChannelView() {
         if (!channel.value) {
             navigate("/");
         } else {
-            //pageTitle.value = channel.value.name;
+            pageTitle.value = channel.value.name;
         }
     }
 
