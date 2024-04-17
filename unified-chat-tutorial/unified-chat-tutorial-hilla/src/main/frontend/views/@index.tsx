@@ -11,7 +11,6 @@ import {VirtualList} from "@vaadin/react-components/VirtualList";
 import {Avatar} from "@vaadin/react-components/Avatar";
 import {formatDate, hashCode} from "Frontend/util/util";
 
-import './_index.css';
 import {ViewConfig} from "@vaadin/hilla-file-router/types.js";
 
 export const config: ViewConfig = {

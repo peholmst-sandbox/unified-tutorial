@@ -14,7 +14,6 @@ import Channel from "Frontend/generated/com/example/application/chat/Channel";
 import {formatDate, hashCode} from "Frontend/util/util";
 import {Button} from "@vaadin/react-components/Button";
 
-import './_index.css';
 import {ViewConfig} from "@vaadin/hilla-file-router/types.js";
 
 export const config: ViewConfig = {
@@ -131,7 +130,7 @@ export default function ChannelView() {
                 theme: message.author === currentUserName ? "current-user" : undefined,
                 userColorIndex: Math.abs(hashCode(message.author) % 7)
             }))}/>
-            <MessageInput className={"w-full p-0"} onSubmit={e => sendMessage(e.detail.value)}/>
+            <MessageInput className={"w-full"} onSubmit={e => sendMessage(e.detail.value)}/>
             <Notification opened={error.value} theme={"error"} duration={0}>
                 <span>There is a problem with the chat. Please reload the page.</span>
                 <Button onClick={_ => window.location.reload()}>Reload</Button>
