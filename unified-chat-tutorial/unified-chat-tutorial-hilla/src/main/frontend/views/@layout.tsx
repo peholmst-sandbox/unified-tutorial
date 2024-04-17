@@ -3,7 +3,7 @@ import {DrawerToggle} from "@vaadin/react-components/DrawerToggle.js";
 import Placeholder from "Frontend/components/placeholder/Placeholder.js";
 import {useAuth} from "Frontend/auth";
 import {Suspense} from "react";
-import {Outlet} from "react-router-dom";
+import {Outlet, useLocation, useNavigate} from "react-router-dom";
 import {SideNav} from "@vaadin/react-components/SideNav";
 import {SideNavItem} from "@vaadin/react-components/SideNavItem";
 import {Icon} from "@vaadin/react-components/Icon";
@@ -21,13 +21,14 @@ import {Tooltip} from "@vaadin/react-components/Tooltip";
 
 export default function MainLayout() {
     const {state, logout} = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
 
-    // TODO https://github.com/vaadin/web-components/issues/6468 - Navigating by clicking on items in the SideNav will cause a page reload
     return (
         <AppLayout primarySection="drawer">
             <span className="items-center flex text-l font-semibold h-xl px-m" slot="drawer">Vaadin Chat</span>
             <Scroller slot="drawer" className="p-s">
-                <SideNav>
+                <SideNav onNavigate={({path}) => navigate(path!)} location={location}>
                     <SideNavItem path="/">
                         <Icon icon="vaadin:building" slot="prefix"/>
                         Lobby
