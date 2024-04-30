@@ -1,4 +1,4 @@
-package com.example.application.ui.error;
+package com.example.application.views;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;

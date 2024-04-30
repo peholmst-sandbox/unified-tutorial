@@ -1,6 +1,6 @@
-package com.example.application.ui;
+package com.example.application.views;
 
-import com.example.application.ui.views.lobby.LobbyView;
+import com.example.application.views.lobby.LobbyView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;

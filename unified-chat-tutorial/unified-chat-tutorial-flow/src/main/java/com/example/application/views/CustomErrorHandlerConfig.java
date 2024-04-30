@@ -1,4 +1,4 @@
-package com.example.application.ui.error;
+package com.example.application.views;
 
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import org.springframework.context.annotation.Bean;

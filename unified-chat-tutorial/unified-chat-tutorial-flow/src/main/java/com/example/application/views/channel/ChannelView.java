@@ -1,9 +1,9 @@
-package com.example.application.ui.views.channel;
+package com.example.application.views.channel;
 
 import com.example.application.chat.ChatService;
 import com.example.application.chat.Message;
-import com.example.application.ui.MainLayout;
-import com.example.application.ui.views.lobby.LobbyView;
+import com.example.application.views.MainLayout;
+import com.example.application.views.lobby.LobbyView;
 import com.example.application.util.LimitedSortedAppendOnlyList;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.messages.MessageInput;

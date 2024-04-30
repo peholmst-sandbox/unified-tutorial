@@ -1,10 +1,10 @@
-package com.example.application.ui.views.lobby;
+package com.example.application.views.lobby;
 
 import com.example.application.chat.Channel;
 import com.example.application.chat.ChatService;
 import com.example.application.security.Roles;
-import com.example.application.ui.MainLayout;
-import com.example.application.ui.views.channel.ChannelView;
+import com.example.application.views.MainLayout;
+import com.example.application.views.channel.ChannelView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
